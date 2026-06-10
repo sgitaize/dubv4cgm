@@ -19,6 +19,28 @@ pebble build
 pebble install --phone <device>
 ```
 
+## Development
+
+### Local agent skills
+
+Pebble's pebble-watchface skill can be made available to local agents through a git submodule:
+
+```bash
+git submodule update --init
+```
+
+To pull the latest changes from the submodule's remote:
+
+```bash
+git submodule update --remote --merge
+```
+
+Symlink the pebble-watchface skill into the main repo:
+
+```bash
+ln -sf ../../pebble-watchface-agent-skill/.claude/skills/pebble-watchface .agents/skills/pebble-watchface
+```
+
 ## License
 
 MIT-style license. See [LICENSE](LICENSE) for details.
