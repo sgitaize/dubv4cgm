@@ -1,3 +1,11 @@
+# Pebble build artifacts
 build/*
 .lock-waf_*_build
 node_modules/
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
