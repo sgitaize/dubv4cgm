@@ -1,0 +1,253 @@
+#pragma once
+#include <pebble.h>
+
+#define ANIM_DURATION 700
+
+typedef enum {UP, DOWN, LEFT, RIGHT} direction_t;
+
+// SCREEN
+#if defined(PBL_PLATFORM_EMERY)
+  #define FULLSCREEN GRect(0, 0, 200, 228)
+#elif defined(PBL_RECT)
+  #define FULLSCREEN GRect(0, 0, 144, 168)
+#else
+  #define FULLSCREEN GRect(0, 0, 180, 180)
+#endif
+
+// BACKGROUND — concentric panels, full width, 3px inset each (round(2*1.35))
+#if defined(PBL_PLATFORM_EMERY)
+  #define BACKGROUND_PANEL GRect(0, 46, 200, 138)
+  #define BACKGROUND_PANEL_OUTER GRect(0, 0, 200, 138)
+  #define BACKGROUND_PANEL_MIDDLE GRect(2, 2, 196, 134)
+  #define BACKGROUND_PANEL_INNER GRect(4, 4, 192, 130)
+#elif defined(PBL_RECT)
+  #define BACKGROUND_PANEL GRect(0, 34, 144, 102)
+  #define BACKGROUND_PANEL_OUTER GRect(0, 0, 144, 102)
+  #define BACKGROUND_PANEL_MIDDLE GRect(2, 2, 140, 98)
+  #define BACKGROUND_PANEL_INNER GRect(4, 4, 136, 94)
+#else
+  #define BACKGROUND_PANEL GRect(0, 0, 180, 180)
+  #define BACKGROUND_PANEL_OUTER GRect(0, 0, 180, 180)
+  #define BACKGROUND_PANEL_MIDDLE GRect(2, 2, 176, 176)
+  #define BACKGROUND_PANEL_INNER GRect(4, 4, 172, 172)
+#endif
+
+// BATTERY — terminal position DERIVED from scaled icon dimensions
+#if defined(PBL_PLATFORM_EMERY)
+  #define BATTERY_LAYER GRect(166, 58, 23, 12)
+  #define BATTERY_PERCENT GRect(116, 55, 47, 22)
+  #define BATTERY_ICON GRect(0, 0, 22, 12)
+  // terminal: 1px line at right edge, height matches fill, vertically centered
+  #define BATTERY_ICON_TERMINAL GRect(22, 2, 1, 8)
+  #define BATTERY_FILL_OFFSET_X 2
+  #define BATTERY_FILL_OFFSET_Y 2
+  #define BATTERY_FILL_HEIGHT 8
+  // fill_max at 100%: icon_w - terminal_w - 1 - 2*offset = 22-3-1-4 = 14, then +1 = 15... but we want fill to reach x=20 (terminal at 21, gap 1)
+  // fill starts at x=2, so max_width = 20-2 = 18, ceil = 19
+  #define BATTERY_FILL_MAX_W 18
+  #define BATTERY_FILL_CEIL 19
+#elif defined(PBL_RECT)
+  #define BATTERY_LAYER GRect(120, 43, 17, 9)
+  #define BATTERY_PERCENT GRect(83, 41, 35, 16)
+  #define BATTERY_ICON GRect(0, 0, 16, 9)
+  #define BATTERY_ICON_TERMINAL GRect(15, 2, 2, 5)
+  #define BATTERY_FILL_OFFSET_X 2
+  #define BATTERY_FILL_OFFSET_Y 2
+  #define BATTERY_FILL_HEIGHT 5
+  #define BATTERY_FILL_MAX_W 11
+  #define BATTERY_FILL_CEIL 12
+#else
+  #define BATTERY_LAYER GRect(128, 51, 17, 9)
+  #define BATTERY_PERCENT GRect(128, 51, 35, 16)
+  #define BATTERY_ICON GRect(0, 0, 16, 9)
+  #define BATTERY_ICON_TERMINAL GRect(15, 2, 2, 5)
+  #define BATTERY_FILL_OFFSET_X 2
+  #define BATTERY_FILL_OFFSET_Y 2
+  #define BATTERY_FILL_HEIGHT 5
+  #define BATTERY_FILL_MAX_W 11
+  #define BATTERY_FILL_CEIL 12
+#endif
+
+// HEALTH
+#if defined(PBL_PLATFORM_EMERY)
+  #define HEALTH_LAYER GRect(37, 55, 95, 22)
+  #define HEALTH_TEXT_LAYER GRect(20, 0, 90, 22)
+  #define HEALTH_ZEE_LAYER GRect(0, 4, 19, 9)
+  #define HEALTH_FOOT_LAYER GRect(4, 0, 12, 16)
+  #define HEALTH_FOOT2_LAYER GRect(11, 4, 12, 16)
+#elif defined(PBL_RECT)
+  #define HEALTH_LAYER GRect(25, 41, 70, 16)
+  #define HEALTH_TEXT_LAYER GRect(15, 0, 67, 16)
+  #define HEALTH_ZEE_LAYER GRect(0, 3, 14, 7)
+  #define HEALTH_FOOT_LAYER GRect(3, 0, 9, 12)
+  #define HEALTH_FOOT2_LAYER GRect(8, 3, 9, 12)
+#else
+  #define HEALTH_LAYER GRect(71, 123, 70, 16)
+  #define HEALTH_TEXT_LAYER GRect(15, 0, 67, 16)
+  #define HEALTH_ZEE_LAYER GRect(0, 3, 14, 7)
+  #define HEALTH_FOOT_LAYER GRect(3, 0, 9, 12)
+  #define HEALTH_FOOT2_LAYER GRect(8, 3, 9, 12)
+#endif
+#define HEALTH_STEP_MIN 400
+
+// BLUETOOTH — circle center/radius scaled from original (5,5,r5) in 13x13 layer
+#if defined(PBL_PLATFORM_EMERY)
+  #define BLUETOOTH_LAYER GRect(15, 57, 18, 18)
+  #define BLUETOOTH_ICON_CIRCLE GRect(0, 0, 18, 18)
+  #define BLUETOOTH_ICON_SYMBOL GRect(3, 1, 9, 12)
+  // circle center: round(5*1.35)=7, radius: round(5*1.35)=7
+  #define BT_CIRCLE_CENTER GPoint(7, 7)
+  #define BT_CIRCLE_RADIUS 7
+#elif defined(PBL_RECT)
+  #define BLUETOOTH_LAYER GRect(9, 42, 13, 13)
+  #define BLUETOOTH_ICON_CIRCLE GRect(0, 0, 13, 13)
+  #define BLUETOOTH_ICON_SYMBOL GRect(2, 1, 7, 9)
+  #define BT_CIRCLE_CENTER GPoint(5, 5)
+  #define BT_CIRCLE_RADIUS 5
+#else
+  #define BLUETOOTH_LAYER GRect(84, 52, 13, 13)
+  #define BLUETOOTH_ICON_CIRCLE GRect(0, 0, 13, 13)
+  #define BLUETOOTH_ICON_SYMBOL GRect(2, 1, 7, 9)
+  #define BT_CIRCLE_CENTER GPoint(5, 5)
+  #define BT_CIRCLE_RADIUS 5
+#endif
+
+// TIMEDIGITS — positions are right-edges of right-aligned text layers
+// Formula: pos = round(original * 1.35) + 3, size = round(original * 1.35)
+#if defined(PBL_PLATFORM_EMERY)
+  #define TIMEDIGITS_CENTER GRect(2, 20, 194, 227)
+  #define TIMEDIGITS_DATE GRect(2, 51, 186, 40)
+  #define TIMEDIGITS_AMPM GRect(23, 66, 77, 40)
+  #define TIMEDIGITS_DIGIT1 5
+  #define TIMEDIGITS_DIGIT2 47
+  #define TIMEDIGITS_DIGIT3 101
+  #define TIMEDIGITS_DIGIT4 143
+  #define TIMEDIGITS_SEPARATOR 60
+  #define TIMEDIGITS_OFFSET_TOP 55
+  #define TIMEDIGITS_WIDTH 49
+  #define TIMEDIGITS_HEIGHT 108
+#elif defined(PBL_RECT)
+  #define TIMEDIGITS_CENTER GRect(0, 15, 144, 168)
+  #define TIMEDIGITS_DATE GRect(0, 38, 138, 30)
+  #define TIMEDIGITS_AMPM GRect(16, 49, 57, 30)
+  #define TIMEDIGITS_DIGIT1 3
+  #define TIMEDIGITS_DIGIT2 34
+  #define TIMEDIGITS_DIGIT3 74
+  #define TIMEDIGITS_DIGIT4 105
+  #define TIMEDIGITS_SEPARATOR 44
+  #define TIMEDIGITS_OFFSET_TOP 41
+  #define TIMEDIGITS_WIDTH 36
+  #define TIMEDIGITS_HEIGHT 80
+#else
+  #define TIMEDIGITS_CENTER GRect(18, 5, 180, 180)
+  #define TIMEDIGITS_DATE GRect(0, 7, 99, 30)
+  #define TIMEDIGITS_AMPM GRect(19, 46, 57, 30)
+  #define TIMEDIGITS_DIGIT1 3
+  #define TIMEDIGITS_DIGIT2 34
+  #define TIMEDIGITS_DIGIT3 74
+  #define TIMEDIGITS_DIGIT4 105
+  #define TIMEDIGITS_SEPARATOR 44
+  #define TIMEDIGITS_OFFSET_TOP 41
+  #define TIMEDIGITS_WIDTH 36
+  #define TIMEDIGITS_HEIGHT 80
+#endif
+
+// TIMEDIGITS SECONDS
+#if defined(PBL_PLATFORM_EMERY)
+  #define TIMEDIGITS_SECONDS_DIGIT1 6
+  #define TIMEDIGITS_SECONDS_DIGIT2 40
+  #define TIMEDIGITS_SECONDS_DIGIT3 86
+  #define TIMEDIGITS_SECONDS_DIGIT4 119
+  #define TIMEDIGITS_SECONDS_DIGIT5 161
+  #define TIMEDIGITS_SECONDS_DIGIT6 174
+  #define TIMEDIGITS_SECONDS_SEPARATOR 51
+  #define TIMEDIGITS_SECONDS_OFFSET_TOP 70
+  #define TIMEDIGITS_SECONDS_SMALL_OFFSET_TOP 103
+  #define TIMEDIGITS_SECONDS_WIDTH 40
+  #define TIMEDIGITS_SECONDS_SMALL_WIDTH 15
+  #define TIMEDIGITS_SECONDS_HEIGHT 76
+  #define TIMEDIGITS_SECONDS_SMALL_HEIGHT 30
+#elif defined(PBL_RECT)
+  #define TIMEDIGITS_SECONDS_DIGIT1 3
+  #define TIMEDIGITS_SECONDS_DIGIT2 28
+  #define TIMEDIGITS_SECONDS_DIGIT3 62
+  #define TIMEDIGITS_SECONDS_DIGIT4 87
+  #define TIMEDIGITS_SECONDS_DIGIT5 117
+  #define TIMEDIGITS_SECONDS_DIGIT6 128
+  #define TIMEDIGITS_SECONDS_SEPARATOR 36
+  #define TIMEDIGITS_SECONDS_OFFSET_TOP 52
+  #define TIMEDIGITS_SECONDS_SMALL_OFFSET_TOP 76
+  #define TIMEDIGITS_SECONDS_WIDTH 30
+  #define TIMEDIGITS_SECONDS_SMALL_WIDTH 11
+  #define TIMEDIGITS_SECONDS_HEIGHT 56
+  #define TIMEDIGITS_SECONDS_SMALL_HEIGHT 22
+#else
+  #define TIMEDIGITS_SECONDS_DIGIT1 3
+  #define TIMEDIGITS_SECONDS_DIGIT2 28
+  #define TIMEDIGITS_SECONDS_DIGIT3 62
+  #define TIMEDIGITS_SECONDS_DIGIT4 87
+  #define TIMEDIGITS_SECONDS_DIGIT5 117
+  #define TIMEDIGITS_SECONDS_DIGIT6 128
+  #define TIMEDIGITS_SECONDS_SEPARATOR 36
+  #define TIMEDIGITS_SECONDS_OFFSET_TOP 52
+  #define TIMEDIGITS_SECONDS_SMALL_OFFSET_TOP 76
+  #define TIMEDIGITS_SECONDS_WIDTH 30
+  #define TIMEDIGITS_SECONDS_SMALL_WIDTH 11
+  #define TIMEDIGITS_SECONDS_HEIGHT 56
+  #define TIMEDIGITS_SECONDS_SMALL_HEIGHT 22
+#endif
+
+// DECORATIONS — full-width lines, scaled positions for buttons/WR
+#if defined(PBL_PLATFORM_EMERY)
+  #define DECORATIONS_LINE_TOP_START GPoint(0, 26)
+  #define DECORATIONS_LINE_TOP_END GPoint(200, 26)
+  #define DECORATIONS_LINE_BOTTOM_START GPoint(0, 203)
+  #define DECORATIONS_LINE_BOTTOM_END GPoint(200, 203)
+  #define DECORATIONS_BUTTON_BACK_LABEL GRect(21, 28, 47, 14)
+  #define DECORATIONS_BUTTON_NEXT_LABEL GRect(146, 185, 34, 14)
+  #define DECORATIONS_BUTTON_PREV_LABEL GRect(146, 28, 34, 14)
+  #define DECORATIONS_BUTTON_BACK_ICON GRect(10, 33, 7, 8)
+  #define DECORATIONS_BUTTON_NEXT_ICON GRect(183, 33, 7, 8)
+  #define DECORATIONS_BUTTON_PREV_ICON GRect(183, 191, 7, 8)
+  #define DECORATIONS_BRANDING GRect(0, -5, 200, 40)
+  #define DECORATIONS_WR_OUTER GRect(72, 200, 57, 22)
+  #define DECORATIONS_WR_WATER GRect(3, 205, 62, 27)
+  #define DECORATIONS_WR_RESIST GRect(137, 205, 65, 27)
+  #define DECORATIONS_LOGO GRect(18, 3, 161, 20)
+  // WR hole is relative to WR layer, NOT screen — no +3 offset
+  #define DECORATIONS_WR_HOLE GRect(36, 7, 4, 3)
+#elif defined(PBL_RECT)
+  #define DECORATIONS_LINE_TOP_START GPoint(0, 19)
+  #define DECORATIONS_LINE_TOP_END GPoint(144, 19)
+  #define DECORATIONS_LINE_BOTTOM_START GPoint(0, 150)
+  #define DECORATIONS_LINE_BOTTOM_END GPoint(144, 150)
+  #define DECORATIONS_BUTTON_BACK_LABEL GRect(13, 21, 35, 10)
+  #define DECORATIONS_BUTTON_NEXT_LABEL GRect(106, 137, 25, 10)
+  #define DECORATIONS_BUTTON_PREV_LABEL GRect(106, 21, 25, 10)
+  #define DECORATIONS_BUTTON_BACK_ICON GRect(5, 24, 5, 6)
+  #define DECORATIONS_BUTTON_NEXT_ICON GRect(133, 24, 5, 6)
+  #define DECORATIONS_BUTTON_PREV_ICON GRect(133, 140, 5, 6)
+  #define DECORATIONS_BRANDING GRect(0, -4, 144, 30)
+  #define DECORATIONS_WR_OUTER GRect(51, 148, 42, 16)
+  #define DECORATIONS_WR_WATER GRect(0, 152, 46, 20)
+  #define DECORATIONS_WR_RESIST GRect(99, 152, 48, 20)
+  #define DECORATIONS_LOGO GRect(11, 2, 119, 15)
+  #define DECORATIONS_WR_HOLE GRect(27, 5, 3, 2)
+#else
+  #define DECORATIONS_LINE_TOP_START GPoint(33, 37)
+  #define DECORATIONS_LINE_TOP_END GPoint(147, 37)
+  #define DECORATIONS_LINE_BOTTOM_START GPoint(32, 142)
+  #define DECORATIONS_LINE_BOTTOM_END GPoint(148, 142)
+  #define DECORATIONS_BUTTON_BACK_LABEL GRect(13, 21, 35, 10)
+  #define DECORATIONS_BUTTON_NEXT_LABEL GRect(106, 137, 25, 10)
+  #define DECORATIONS_BUTTON_PREV_LABEL GRect(106, 21, 25, 10)
+  #define DECORATIONS_BUTTON_BACK_ICON GRect(5, 24, 5, 6)
+  #define DECORATIONS_BUTTON_NEXT_ICON GRect(133, 24, 5, 6)
+  #define DECORATIONS_BUTTON_PREV_ICON GRect(133, 140, 5, 6)
+  #define DECORATIONS_BRANDING GRect(0, -4, 144, 30)
+  #define DECORATIONS_WR_OUTER GRect(69, 138, 42, 16)
+  #define DECORATIONS_WR_WATER GRect(19, 128, 46, 20)
+  #define DECORATIONS_WR_RESIST GRect(116, 128, 48, 20)
+  #define DECORATIONS_LOGO GRect(11, 2, 119, 15)
+  #define DECORATIONS_WR_HOLE GRect(27, 5, 3, 2)
+#endif
