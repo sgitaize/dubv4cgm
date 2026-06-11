@@ -61,6 +61,9 @@ void settings_process_tuple(Tuple *new_tuple) {
   int8_t cnt=0;
   cnt++;
   switch (new_tuple->key) {
+    case LOGO_KEY:
+      global_settings.Logo = new_tuple->value->uint8;
+      break;
     case HEALTH_KEY:
       global_settings.Health = new_tuple->value->uint8;
       break;
@@ -194,6 +197,7 @@ void settings_default_values() {
   global_settings.SwitchSet = 0;
   global_settings.SwitchStart = 47;//23:00
   global_settings.SwitchEnd = 15;  //07:00
+  global_settings.Logo = 0;
   colors[c_bg1] = GColorWhite;
   colors[c_bg2] = GColorBlack;
   colors[c_bg3] = GColorWhite;

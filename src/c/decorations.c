@@ -10,6 +10,12 @@ static Layer *decorations_layer, *wr_outer_layer, *button_back_icon_layer, *butt
 static TextLayer *water_layer, *resist_layer, *button_back_layer, *button_next_layer, *button_prev_layer;
 static BitmapLayer *logo_layer;
 static GBitmap *logo_image;
+static int8_t current_logo = -1;
+
+static const int logo_resource_ids[LOGOS_COUNT] = {
+  RESOURCE_ID_IMAGE_LOGO_PEBBLE_OLD,
+  RESOURCE_ID_IMAGE_LOGO_PEBBLE_NEW
+};
 
 static GPath *arrow_left_path_ptr = NULL;
 #if defined(PBL_PLATFORM_EMERY)
@@ -108,6 +114,25 @@ d8  Button Icons
 d9  Branding Text
 */
 
+static void decorations_load_logo(int8_t index) {
+  if (index < 0 || index >= LOGOS_COUNT) return;
+  if (index == current_logo) return;
+  current_logo = index;
+
+  if (logo_image) {
+    gbitmap_destroy(logo_image);
+    logo_image = NULL;
+  }
+
+  logo_image = gbitmap_create_with_resource(logo_resource_ids[index]);
+  #ifdef PBL_COLOR
+    GColor * xcolors = gbitmap_get_palette(logo_image);
+    xcolors[0].argb = color_helper(colors[c_bg4], global_settings.Invert).argb;
+    xcolors[1].argb = color_helper(colors[c_d9], global_settings.Invert).argb;
+  #endif
+  bitmap_layer_set_bitmap(logo_layer, logo_image);
+}
+
 void decorations_settings_callback() {
 
   //APP_LOG(APP_LOG_LEVEL_DEBUG, "decorations_settings_callback()");
@@ -124,6 +149,8 @@ void decorations_settings_callback() {
       xcolors[0].argb = color_helper(colors[c_bg4], global_settings.Invert).argb;
       xcolors[1].argb = color_helper(colors[c_d9], global_settings.Invert).argb;
   #endif
+
+  decorations_load_logo(global_settings.Logo);
 
   if(global_settings.BrandingMask) {
     layer_set_hidden(bitmap_layer_get_layer(logo_layer), true);
@@ -269,14 +296,8 @@ void decorations_init() {
   layer_add_child(decorations_layer, text_layer_get_layer(button_prev_layer));
 
   // BRANDING LABEL
-  logo_image = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_LOGO2);
   logo_layer = bitmap_layer_create(DECORATIONS_LOGO);
-  #ifdef PBL_COLOR
-    GColor * xcolors = gbitmap_get_palette(logo_image);
-    xcolors[0].argb = color_helper(colors[c_bg4], global_settings.Invert).argb;
-    xcolors[1].argb = color_helper(colors[c_d9], global_settings.Invert).argb;
-  #endif
-  bitmap_layer_set_bitmap(logo_layer, logo_image);
+  decorations_load_logo(global_settings.Logo);
   layer_add_child(decorations_layer, bitmap_layer_get_layer(logo_layer));
 
   settings_register_callback(decorations_settings_callback, SETTINGS_CALLBACK_DECORATIONS);
@@ -320,6 +341,7 @@ void decorations_deinit() {
   layer_remove_from_parent(bitmap_layer_get_layer(logo_layer));
   gbitmap_destroy(logo_image);
   logo_image = NULL;
+  current_logo = -1;
   bitmap_layer_destroy(logo_layer);
 
   layer_remove_from_parent(text_layer_get_layer(water_layer));

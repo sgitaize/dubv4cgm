@@ -1,7 +1,7 @@
 {
   "name": "91-dub-v5",
   "author": "lightrush",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "keywords": ["pebble-app"],
   "private": true,
   "dependencies": {
@@ -32,6 +32,7 @@
       "SwitchSet",
       "SwitchStart",
       "SwitchEnd",
+      "Logo",
       "Set1_bg1", "Set1_bg2", "Set1_bg3", "Set1_bg4",
       "Set1_bi1", "Set1_bi2", "Set1_bi3", "Set1_bi4",
       "Set1_bl1", "Set1_bl2", "Set1_bl3", "Set1_bl4",
@@ -98,8 +99,13 @@
           "type": "font"
         },
         {
-          "file": "images/logo2.png",
-          "name": "IMAGE_LOGO2",
+          "file": "images/pebble-logo-old.png",
+          "name": "IMAGE_LOGO_PEBBLE_OLD",
+          "type": "png"
+        },
+        {
+          "file": "images/pebble-logo-new.png",
+          "name": "IMAGE_LOGO_PEBBLE_NEW",
           "type": "png"
         },
         {

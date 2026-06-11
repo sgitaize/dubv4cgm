@@ -26,6 +26,8 @@ enum {
   c_t1, c_t2, c_t3, c_t4 //time digits
  };
 
+#define LOGOS_COUNT 2
+
 typedef struct Settings {
   uint8_t Health;
   uint8_t Blink;
@@ -41,6 +43,7 @@ typedef struct Settings {
   uint8_t SwitchSet; //0 inactive, 1-time, 2-tap
   uint8_t SwitchStart;
   uint8_t SwitchEnd;
+  uint8_t Logo;
 } __attribute__((__packed__)) Settings;
 
 extern Settings global_settings;
@@ -55,7 +58,8 @@ enum {
   BLINK_KEY, INVERT_KEY, BLUETOOTHVIBE_KEY, HOURLYVIBE_KEY,
   BRANDING_MASK_KEY, BATTERY_HIDE_KEY, SECONDS_KEY,
   POWERSAVE_KEY, PS_START_KEY, PS_END_KEY,
-  SWITCHSET_KEY, SWITCH_START_KEY, SWITCH_END_KEY, HEALTH_KEY
+  SWITCHSET_KEY, SWITCH_START_KEY, SWITCH_END_KEY, HEALTH_KEY,
+  LOGO_KEY
 };
 
 #define SET_KEY  200

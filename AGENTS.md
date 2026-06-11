@@ -110,6 +110,16 @@ Handles Pebble OS 5+ watch face obstruction (always-on complications). Subscribe
 ### clay_wrapper.c
 Wraps the Clay configuration framework. Receives color and setting values from Clay web UI via AppMessage. Parses color hex values, toggle settings, select settings, and time-range settings. Registers inbox callback before `app_message_open()`.
 
+**Important: `clay_wrapper.c` is the actual inbox handler for settings sent from the phone.** `settings.c`'s `settings_inbox()` is registered but overshadowed by `clay_wrapper_inbox()` which opens the AppMessage channel last. When adding a new setting, you must update all of:
+
+1. `settings.h` — add field to `Settings` struct, add message key to enum
+2. `settings.c` — add default value in `settings_default_values()`, add case in `settings_process_tuple()` (for fallback/compat)
+3. `clay_wrapper.c` — add case in `clay_wrapper_inbox()` to parse the incoming tuple into `global_settings`
+4. `config.js` — add the Clay UI control with the matching `messageKey`
+5. `package.json` — add the key to the `messageKeys` array (required for the SDK to generate the C `MESSAGE_KEY_*` macro)
+
+Select controls send values as cstrings (e.g. `"0"`, `"1"`), toggles send as int32 (0 or 1), colors send as int32 hex values.
+
 ## Architecture Patterns
 
 ### Callback Registry

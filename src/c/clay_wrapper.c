@@ -85,6 +85,7 @@ static void clay_wrapper_inbox(DictionaryIterator *iter, void *context) {
     // Select settings (sent as cstring "0", "1", "2")
     else if (key == MESSAGE_KEY_Blink)     global_settings.Blink = parse_cstring_uint8(t->value->cstring);
     else if (key == MESSAGE_KEY_SwitchSet) global_settings.SwitchSet = parse_cstring_uint8(t->value->cstring);
+    else if (key == MESSAGE_KEY_Logo)      global_settings.Logo = parse_cstring_uint8(t->value->cstring);
 
     // Time settings (sent as cstring "HH:MM")
     else if (key == MESSAGE_KEY_PS_Start)      global_settings.PS_Start = (uint8_t)parse_time_to_halfday(t->value->cstring);

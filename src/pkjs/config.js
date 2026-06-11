@@ -123,6 +123,16 @@
       items: [
         { type: 'heading', defaultValue: 'Appearance' },
         {
+          type: 'select',
+          messageKey: 'Logo',
+          label: 'Branding Logo',
+          defaultValue: '0',
+          options: [
+            { label: 'Pebble old', value: '0' },
+            { label: 'Pebble new', value: '1' }
+          ]
+        },
+        {
           type: 'toggle',
           messageKey: 'BrandingMask',
           label: 'Hide Branding',

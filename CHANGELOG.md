@@ -1,0 +1,10 @@
+# Changelog
+
+## v5.1.0
+- Add switchable branding logo setting (Pebble old / Pebble new)
+
+## v5.0.0
+- Built targeting the PT2 platform
+- Optimized for the new PT2 display resolution with improved digit and icon sizing. Looks better than auto-scaling 91 Dub v4
+- Redesigned settings page, no longer dependent on external web site
+- Preserves all v4.0 customizability, including color sets and themes
