@@ -209,7 +209,7 @@
     {
       type: 'section',
       items: [
-        { type: 'heading', defaultValue: 'Backlight' },
+        { type: 'heading', defaultValue: 'Backlight Color' },
         {
           type: 'toggle',
           messageKey: 'Set1_lightColorEnabled',
@@ -240,11 +240,11 @@
     {
       type: 'section',
       items: [
-        { type: 'heading', defaultValue: 'Colors' },
+        { type: 'heading', defaultValue: 'Color Theme' },
         {
           type: 'radiogroup',
           messageKey: 'ColorSet',
-          label: 'Apply Theme to Set',
+          label: 'Apply to Color Set',
           defaultValue: '1',
           options: [
             { label: 'Set 1', value: '1' },
@@ -266,14 +266,14 @@
     {
       type: 'section',
       items: [
-        { type: 'heading', defaultValue: 'Set 1 Colors' }
+        { type: 'heading', defaultValue: 'Color Set 1' }
       ].concat(set1Colors)
     },
 
     {
       type: 'section',
       items: [
-        { type: 'heading', defaultValue: 'Set 2 Colors' }
+        { type: 'heading', defaultValue: 'Color Set 2' }
       ].concat(set2Colors)
     },
 

@@ -1,5 +1,8 @@
 # Changelog
 
+## v5.2.1
+- Clarify a few settings labels
+
 ## v5.2.0
 - Add configurable RGB backlight color per color set
 
