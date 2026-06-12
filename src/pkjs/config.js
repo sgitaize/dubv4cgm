@@ -213,7 +213,7 @@
         {
           type: 'radiogroup',
           messageKey: 'ColorSet',
-          label: 'Edit Color Set',
+          label: 'Apply Theme to Set',
           defaultValue: '1',
           options: [
             { label: 'Set 1', value: '1' },

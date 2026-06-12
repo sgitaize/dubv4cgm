@@ -1,5 +1,8 @@
 # Changelog
 
+## v5.1.2
+- Clarify color set selection label
+
 ## v5.1.1
 - Fix color selections resetting to theme value when Settings is reopened
 
