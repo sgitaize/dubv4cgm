@@ -1,5 +1,8 @@
 # Changelog
 
+## v5.1.1
+- Fix color selections resetting to theme value when Settings is reopened
+
 ## v5.1.0
 - Add switchable branding logo setting (Pebble old / Pebble new)
 

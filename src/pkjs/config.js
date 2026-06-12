@@ -226,7 +226,7 @@
           label: 'Theme',
           defaultValue: '',
           options: [
-            { label: '(Custom)', value: '' }
+             { label: 'None', value: '' }
           ].concat(themes.map(function(t) { return { label: t.theme[0].name, value: t.theme[0].name }; }))
         }
       ]
