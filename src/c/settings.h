@@ -6,7 +6,7 @@
 #define COLORSET2_KEY 1342
 
 #define SETTINGS_CALLBACKS_COUNT 7
-#define COLORS_NUM 25
+#define COLORS_NUM 26
 
 typedef enum SettingsCallback {
   SETTINGS_CALLBACK_FONT = 0,
@@ -23,7 +23,8 @@ enum {
   c_bi1, c_bi2, c_bi3, c_bi4, //battery
   c_bl1, c_bl2, c_bl3, c_bl4, //bluetooth
   c_d1, c_d2, c_d3, c_d4, c_d5, c_d6, c_d7, c_d8, c_d9, //decorations
-  c_t1, c_t2, c_t3, c_t4 //time digits
+  c_t1, c_t2, c_t3, c_t4, //time digits
+  c_lc //light color
  };
 
 #define LOGOS_COUNT 2
@@ -44,6 +45,8 @@ typedef struct Settings {
   uint8_t SwitchStart;
   uint8_t SwitchEnd;
   uint8_t Logo;
+  uint8_t LightColorEnabled1;
+  uint8_t LightColorEnabled2;
 } __attribute__((__packed__)) Settings;
 
 extern Settings global_settings;
@@ -59,7 +62,8 @@ enum {
   BRANDING_MASK_KEY, BATTERY_HIDE_KEY, SECONDS_KEY,
   POWERSAVE_KEY, PS_START_KEY, PS_END_KEY,
   SWITCHSET_KEY, SWITCH_START_KEY, SWITCH_END_KEY, HEALTH_KEY,
-  LOGO_KEY
+  LOGO_KEY, LIGHT_COLOR_ENABLED_1_KEY, LIGHT_COLOR_ENABLED_2_KEY,
+  LIGHT_COLOR_1_KEY, LIGHT_COLOR_2_KEY
 };
 
 #define SET_KEY  200
@@ -94,3 +98,4 @@ void settings_save(void *data);
 void settings_core_init();
 void settings_init();
 void settings_deinit();
+void apply_light_color();

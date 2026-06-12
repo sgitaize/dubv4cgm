@@ -64,6 +64,18 @@ void settings_process_tuple(Tuple *new_tuple) {
     case LOGO_KEY:
       global_settings.Logo = new_tuple->value->uint8;
       break;
+    case LIGHT_COLOR_ENABLED_1_KEY:
+      global_settings.LightColorEnabled1 = new_tuple->value->uint8;
+      break;
+    case LIGHT_COLOR_ENABLED_2_KEY:
+      global_settings.LightColorEnabled2 = new_tuple->value->uint8;
+      break;
+    case LIGHT_COLOR_1_KEY:
+      colorsSet1[c_lc] = GColorFromHEX(new_tuple->value->int32);
+      break;
+    case LIGHT_COLOR_2_KEY:
+      colorsSet2[c_lc] = GColorFromHEX(new_tuple->value->int32);
+      break;
     case HEALTH_KEY:
       global_settings.Health = new_tuple->value->uint8;
       break;
@@ -198,6 +210,9 @@ void settings_default_values() {
   global_settings.SwitchStart = 47;//23:00
   global_settings.SwitchEnd = 15;  //07:00
   global_settings.Logo = 0;
+  global_settings.LightColorEnabled1 = 0;
+  global_settings.LightColorEnabled2 = 0;
+  colors[c_lc] = GColorWhite;
   colors[c_bg1] = GColorWhite;
   colors[c_bg2] = GColorBlack;
   colors[c_bg3] = GColorWhite;
@@ -235,10 +250,12 @@ void settings_default_values() {
 void settings_load_colorSet1() {
   memcpy(colors, colorsSet1, COLORS_NUM);
   selectedSet = 0;
+  apply_light_color();
 }
 void settings_load_colorSet2() {
   memcpy(colors, colorsSet2, COLORS_NUM);
   selectedSet = 1;
+  apply_light_color();
 }
 
 static void handle_tap(AccelAxisType axis, int32_t direction) {
@@ -265,8 +282,22 @@ void timed_colorset(int8_t h, int8_t m){
   }
 }
 
+void apply_light_color() {
+  #if defined(PBL_RGB_BACKLIGHT)
+    bool enabled = (selectedSet == 0) ? global_settings.LightColorEnabled1 : global_settings.LightColorEnabled2;
+    if (enabled) {
+      light_set_color(colors[c_lc]);
+    } else {
+      light_set_system_color();
+    }
+  #endif
+}
+
 void settings_core_init() {
   settings_default_values();
+  // persist_read_data only writes the stored bytes. When structs or arrays grow,
+  // new fields beyond the stored size are left untouched, preserving the defaults
+  // set by settings_default_values(). Safe for upgrades from older PBW versions.
   if(persist_exists(SETTINGS_KEY)) {
     persist_read_data(SETTINGS_KEY, &global_settings, sizeof(global_settings));
   }

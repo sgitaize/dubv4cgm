@@ -1,5 +1,8 @@
 # Changelog
 
+## v5.2.0
+- Add configurable RGB backlight color per color set
+
 ## v5.1.2
 - Clarify color set selection label
 

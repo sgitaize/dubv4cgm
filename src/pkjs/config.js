@@ -209,6 +209,37 @@
     {
       type: 'section',
       items: [
+        { type: 'heading', defaultValue: 'Backlight' },
+        {
+          type: 'toggle',
+          messageKey: 'Set1_lightColorEnabled',
+          label: 'Set 1 Custom Backlight',
+          defaultValue: false
+        },
+        {
+          type: 'color',
+          messageKey: 'Set1_lightColor',
+          label: 'Set 1 Backlight Color',
+          defaultValue: '0xFFFFFF'
+        },
+        {
+          type: 'toggle',
+          messageKey: 'Set2_lightColorEnabled',
+          label: 'Set 2 Custom Backlight',
+          defaultValue: false
+        },
+        {
+          type: 'color',
+          messageKey: 'Set2_lightColor',
+          label: 'Set 2 Backlight Color',
+          defaultValue: '0xFFFFFF'
+        }
+      ]
+    },
+
+    {
+      type: 'section',
+      items: [
         { type: 'heading', defaultValue: 'Colors' },
         {
           type: 'radiogroup',

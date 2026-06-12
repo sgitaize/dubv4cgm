@@ -102,6 +102,12 @@ static void clay_wrapper_inbox(DictionaryIterator *iter, void *context) {
     else if (key == MESSAGE_KEY_BatteryHide)   global_settings.BatteryHide = (uint8_t)t->value->int32;
     else if (key == MESSAGE_KEY_Seconds)       global_settings.Seconds = (uint8_t)t->value->int32;
     else if (key == MESSAGE_KEY_PowerSave)     global_settings.PowerSave = (uint8_t)t->value->int32;
+    else if (key == MESSAGE_KEY_Set1_lightColorEnabled) global_settings.LightColorEnabled1 = (uint8_t)t->value->int32;
+    else if (key == MESSAGE_KEY_Set2_lightColorEnabled) global_settings.LightColorEnabled2 = (uint8_t)t->value->int32;
+
+    // Light color settings (sent as int32 hex values)
+    else if (key == MESSAGE_KEY_Set1_lightColor) colorsSet1[c_lc] = GColorFromHEX(t->value->int32);
+    else if (key == MESSAGE_KEY_Set2_lightColor) colorsSet2[c_lc] = GColorFromHEX(t->value->int32);
 
     t = dict_read_next(iter);
   }

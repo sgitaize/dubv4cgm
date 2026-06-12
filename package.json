@@ -1,7 +1,7 @@
 {
   "name": "91-dub-v5",
   "author": "lightrush",
-  "version": "5.1.2",
+  "version": "5.2.0",
   "keywords": ["pebble-app"],
   "private": true,
   "dependencies": {
@@ -46,7 +46,11 @@
       "Set2_d6", "Set2_d7", "Set2_d8", "Set2_d9",
       "Set2_t1", "Set2_t2", "Set2_t3", "Set2_t4",
       "Theme",
-      "ColorSet"
+      "ColorSet",
+      "Set1_lightColorEnabled",
+      "Set2_lightColorEnabled",
+      "Set1_lightColor",
+      "Set2_lightColor"
     ],
     "resources": {
       "media": [
