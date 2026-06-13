@@ -13,7 +13,7 @@ module.exports = function(minified) {
 
   function applyTheme(themeName) {
     if (!themeName) return;
-    var colorSetRadio = clayConfig.getItemByMessageKey('ColorSet');
+    var colorSetRadio = clayConfig.getItemById('ColorSet');
     var activeSet = parseInt(colorSetRadio.get());
     for (var i = 0; i < themes.length; i++) {
       if (themes[i].theme[0].name === themeName) {
@@ -30,7 +30,7 @@ module.exports = function(minified) {
   }
 
   clayConfig.on(clayConfig.EVENTS.AFTER_BUILD, function() {
-    var themeSelect = clayConfig.getItemByMessageKey('Theme');
+    var themeSelect = clayConfig.getItemById('Theme');
     var currentTheme = themeSelect.get();
     if (currentTheme) applyTheme(currentTheme);
     themeSelect.on('change', function() { applyTheme(this.get()); });

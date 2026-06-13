@@ -101,8 +101,6 @@ Pebble.addEventListener('appmessage', function(e) {
 });
 
 Pebble.addEventListener('showConfiguration', function() {
-  // Reset Theme to default to workaround Clay persisting the last selection
-  clay.setSettings('Theme', '');
   Pebble.openURL(clay.generateUrl());
 });
 

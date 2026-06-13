@@ -249,7 +249,7 @@
         { type: 'heading', defaultValue: 'Color Theme' },
         {
           type: 'radiogroup',
-          messageKey: 'ColorSet',
+          id: 'ColorSet',
           label: 'Apply to Color Set',
           defaultValue: '1',
           options: [
@@ -259,7 +259,7 @@
         },
         {
           type: 'select',
-          messageKey: 'Theme',
+          id: 'Theme',
           label: 'Theme',
           defaultValue: '',
           options: [
