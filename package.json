@@ -1,7 +1,7 @@
 {
   "name": "91-dub-v5",
   "author": "lightrush",
-  "version": "5.2.1",
+  "version": "5.2.2",
   "keywords": ["pebble-app"],
   "private": true,
   "dependencies": {

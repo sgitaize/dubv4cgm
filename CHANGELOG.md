@@ -1,5 +1,8 @@
 # Changelog
 
+## v5.2.2
+- Touched up the new Pebble logo
+
 ## v5.2.1
 - Clarify a few settings labels
 
