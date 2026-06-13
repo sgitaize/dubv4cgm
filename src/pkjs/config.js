@@ -40,6 +40,8 @@
         type: 'color',
         messageKey: prefix + '_' + shorts[i],
         defaultValue: defaults[i],
+        allowGray: false,
+        sunlight: true,
         label: labels[i]
       });
     }
@@ -220,6 +222,8 @@
           type: 'color',
           messageKey: 'Set1_lightColor',
           label: 'Set 1 Backlight Color',
+          allowGray: false,
+          sunlight: true,
           defaultValue: '0xFFFFFF'
         },
         {
@@ -232,6 +236,8 @@
           type: 'color',
           messageKey: 'Set2_lightColor',
           label: 'Set 2 Backlight Color',
+          allowGray: false,
+          sunlight: true,
           defaultValue: '0xFFFFFF'
         }
       ]
