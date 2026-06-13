@@ -1,5 +1,10 @@
 # Changelog
 
+## v5.2.3
+- Reset Theme select when ColorSet radio changes
+- Remove unused Theme and ColorSet message keys, use Clay id instead
+- Explicitly set sunlight and allowGray in the color pickers
+
 ## v5.2.2
 - Touched up the new Pebble logo
 

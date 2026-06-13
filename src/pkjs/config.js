@@ -263,7 +263,7 @@
           label: 'Theme',
           defaultValue: '',
           options: [
-             { label: 'None', value: '' }
+             { label: 'Select a Theme', value: '' }
           ].concat(themes.map(function(t) { return { label: t.theme[0].name, value: t.theme[0].name }; }))
         }
       ]

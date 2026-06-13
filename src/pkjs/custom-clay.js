@@ -29,10 +29,12 @@ module.exports = function(minified) {
     }
   }
 
-  clayConfig.on(clayConfig.EVENTS.AFTER_BUILD, function() {
+ clayConfig.on(clayConfig.EVENTS.AFTER_BUILD, function() {
     var themeSelect = clayConfig.getItemById('Theme');
+    var colorSetRadio = clayConfig.getItemById('ColorSet');
     var currentTheme = themeSelect.get();
     if (currentTheme) applyTheme(currentTheme);
     themeSelect.on('change', function() { applyTheme(this.get()); });
+    colorSetRadio.on('change', function() { themeSelect.set(themeSelect.config.defaultValue); });
   });
 };
