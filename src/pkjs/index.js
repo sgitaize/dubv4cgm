@@ -5,6 +5,7 @@ var messageKeys = require('../../build/js/message_keys.json');
 var themes = require('./themes.json');
 
 var clay = new Clay(clayConfig, customClay, { autoHandleEvents: false });
+clay.registerComponent(require('./components/preview'));
 
 var SETTINGS_STORAGE_KEY = '91dub_settings';
 var HANDSHAKE_KEY = 9999;

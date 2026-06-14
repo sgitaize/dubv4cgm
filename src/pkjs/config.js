@@ -12,17 +12,17 @@
     bi: ['0x000000', '0xFFA500', '0xFF0000', '0xFF0000'],
     bl: ['0x00009C', '0xD3D3D3', '0xFF0000', '0xFFFFFF'],
     d:  ['0xFFFFFF', '0xFFFFFF', '0xFFFFFF', '0x000000',
-         '0xFFFFFF', '0xFFFFFF', '0xFFFFFF', '0xFFFFFF', '0xFFFFFF'],
+        '0xFFFFFF', '0xFFFFFF', '0xFFFFFF', '0xFFFFFF', '0xFFFFFF'],
     t:  ['0x000000', '0x000000', '0xFFFFFF', '0x000000']
   };
 
   var labels1 = {
-    bg: ['Background Outer', 'Background Mid', 'Background Inner', 'Screen Background'],
-    bi: ['Battery Normal', 'Battery Warning', 'Battery Critical', 'Battery Charging'],
-    bl: ['BT Circle Connected', 'BT Icon Connected', 'BT Circle Disconnected', 'BT Icon Disconnected'],
-    d:  ['Line Top', 'Line Bottom', 'WR Box Stroke', 'WR Box Fill',
-         'WR Letters', 'WR Text', 'Button Labels', 'Button Icons', 'Branding'],
-    t:  ['Date', 'AM/PM Indicator', 'Digit Shadow', 'Digit Foreground']
+    bg: ['Outer Border', 'Inner Border', 'Inner Panel', 'Background'],
+    bi: ['Battery', 'Battery Warning', 'Battery Critical', 'Battery Charging'],
+    bl: ['Circle Connected', 'Icon Connected', 'Circle Disconnected', 'Icon Disconnected'],
+    d:  ['Line Top', 'Line Bottom', 'Box Border', 'Box Fill',
+          'WR Letters', 'Water Resist Text', 'Button Labels', 'Button Arrows', 'Branding Text'],
+    t:  ['Date', 'AM/PM/24H', 'Time Shadow', 'Time']
   };
 
   var shortNames = {
@@ -33,34 +33,64 @@
     t:  ['t1', 't2', 't3', 't4']
   };
 
-  function colorPickers(prefix, labels, defaults, shorts) {
+  function colorPicker(prefix, short, label, defaultVal) {
+    return {
+      type: 'color',
+      messageKey: prefix + '_' + short,
+      defaultValue: defaultVal,
+      allowGray: false,
+      sunlight: true,
+      label: label
+    };
+  }
+
+  function buildColorItems(prefix, defs, lbls, shorts) {
     var items = [];
-    for (var i = 0; i < defaults.length; i++) {
-      items.push({
-        type: 'color',
-        messageKey: prefix + '_' + shorts[i],
-        defaultValue: defaults[i],
-        allowGray: false,
-        sunlight: true,
-        label: labels[i]
-      });
-    }
+
+    items.push(colorPicker(prefix, shorts.bg[3], lbls.bg[3], defs.bg[3]));
+    items.push(colorPicker(prefix, shorts.d[8], lbls.d[8], defs.d[8]));
+
+    items.push({ type: 'heading', defaultValue: 'Centre Panel', size: 4 });
+    items.push(colorPicker(prefix, shorts.bg[0], lbls.bg[0], defs.bg[0]));
+    items.push(colorPicker(prefix, shorts.bg[1], lbls.bg[1], defs.bg[1]));
+    items.push(colorPicker(prefix, shorts.bg[2], lbls.bg[2], defs.bg[2]));
+
+    items.push(colorPicker(prefix, shorts.t[0], lbls.t[0], defs.t[0]));
+    items.push(colorPicker(prefix, shorts.t[1], lbls.t[1], defs.t[1]));
+    items.push(colorPicker(prefix, shorts.t[3], lbls.t[3], defs.t[3]));
+    items.push(colorPicker(prefix, shorts.t[2], lbls.t[2], defs.t[2]));
+
+    items.push({ type: 'heading', defaultValue: 'Lines', size: 4 });
+    items.push(colorPicker(prefix, shorts.d[0], lbls.d[0], defs.d[0]));
+    items.push(colorPicker(prefix, shorts.d[1], lbls.d[1], defs.d[1]));
+
+    items.push({ type: 'heading', defaultValue: 'Water Resist', size: 4 });
+    items.push(colorPicker(prefix, shorts.d[2], lbls.d[2], defs.d[2]));
+    items.push(colorPicker(prefix, shorts.d[3], lbls.d[3], defs.d[3]));
+    items.push(colorPicker(prefix, shorts.d[4], lbls.d[4], defs.d[4]));
+    items.push(colorPicker(prefix, shorts.d[5], lbls.d[5], defs.d[5]));
+
+    items.push({ type: 'heading', defaultValue: 'Buttons', size: 4 });
+    items.push(colorPicker(prefix, shorts.d[6], lbls.d[6], defs.d[6]));
+    items.push(colorPicker(prefix, shorts.d[7], lbls.d[7], defs.d[7]));
+
+    items.push({ type: 'heading', defaultValue: 'Battery', size: 4 });
+    items.push(colorPicker(prefix, shorts.bi[0], lbls.bi[0], defs.bi[0]));
+    items.push(colorPicker(prefix, shorts.bi[1], lbls.bi[1], defs.bi[1]));
+    items.push(colorPicker(prefix, shorts.bi[2], lbls.bi[2], defs.bi[2]));
+    items.push(colorPicker(prefix, shorts.bi[3], lbls.bi[3], defs.bi[3]));
+
+    items.push({ type: 'heading', defaultValue: 'Bluetooth', size: 4 });
+    items.push(colorPicker(prefix, shorts.bl[0], lbls.bl[0], defs.bl[0]));
+    items.push(colorPicker(prefix, shorts.bl[1], lbls.bl[1], defs.bl[1]));
+    items.push(colorPicker(prefix, shorts.bl[2], lbls.bl[2], defs.bl[2]));
+    items.push(colorPicker(prefix, shorts.bl[3], lbls.bl[3], defs.bl[3]));
+
     return items;
   }
 
-  var set1Colors = [];
-  set1Colors = set1Colors.concat(colorPickers('Set1', labels1.bg, defaults1.bg, shortNames.bg));
-  set1Colors = set1Colors.concat(colorPickers('Set1', labels1.bi, defaults1.bi, shortNames.bi));
-  set1Colors = set1Colors.concat(colorPickers('Set1', labels1.bl, defaults1.bl, shortNames.bl));
-  set1Colors = set1Colors.concat(colorPickers('Set1', labels1.d, defaults1.d, shortNames.d));
-  set1Colors = set1Colors.concat(colorPickers('Set1', labels1.t, defaults1.t, shortNames.t));
-
-  var set2Colors = [];
-  set2Colors = set2Colors.concat(colorPickers('Set2', labels1.bg, defaults1.bg, shortNames.bg));
-  set2Colors = set2Colors.concat(colorPickers('Set2', labels1.bi, defaults1.bi, shortNames.bi));
-  set2Colors = set2Colors.concat(colorPickers('Set2', labels1.bl, defaults1.bl, shortNames.bl));
-  set2Colors = set2Colors.concat(colorPickers('Set2', labels1.d, defaults1.d, shortNames.d));
-  set2Colors = set2Colors.concat(colorPickers('Set2', labels1.t, defaults1.t, shortNames.t));
+  var set1Items = buildColorItems('Set1', defaults1, labels1, shortNames);
+  var set2Items = buildColorItems('Set2', defaults1, labels1, shortNames);
 
   var config = [
     { type: 'heading', defaultValue: 'Settings' },
@@ -272,15 +302,25 @@
     {
       type: 'section',
       items: [
-        { type: 'heading', defaultValue: 'Color Set 1' }
-      ].concat(set1Colors)
+        { type: 'heading', defaultValue: 'Color Set 1' },
+        {
+          type: 'preview',
+          id: 'PreviewSet1',
+          defaultValue: ''
+        }
+      ].concat(set1Items)
     },
 
     {
       type: 'section',
       items: [
-        { type: 'heading', defaultValue: 'Color Set 2' }
-      ].concat(set2Colors)
+        { type: 'heading', defaultValue: 'Color Set 2' },
+        {
+          type: 'preview',
+          id: 'PreviewSet2',
+          defaultValue: ''
+        }
+      ].concat(set2Items)
     },
 
     {

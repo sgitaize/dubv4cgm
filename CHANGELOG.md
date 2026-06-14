@@ -1,5 +1,8 @@
 # Changelog
 
+## v5.3.0
+- Introduce live color preview to the new settings
+
 ## v5.2.3
 - Reset Theme select when ColorSet radio changes
 - Remove unused Theme and ColorSet message keys, use Clay id instead
