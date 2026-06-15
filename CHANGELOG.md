@@ -1,5 +1,8 @@
 # Changelog
 
+## v5.4.0
+- Add the ability to export themes
+
 ## v5.3.0
 - Introduce live color preview to the new settings
 

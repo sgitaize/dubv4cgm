@@ -111,12 +111,27 @@ module.exports = function(minified) {
   var onPicker1Change = function() { updatePreview('PreviewSet1', 1); };
   var onPicker2Change = function() { updatePreview('PreviewSet2', 2); };
 
+  function buildThemeObject(setNum) {
+    var theme = { name: 'Custom Theme ' + setNum };
+    for (var i = 0; i < colorKeys.length; i++) {
+      var item = clayConfig.getItemByMessageKey('Set' + setNum + '_' + colorKeys[i]);
+      if (item) {
+        var hex = intToHex(item.get());
+        if (hex) {
+          theme[colorKeys[i] + 'color'] = hex;
+        }
+      }
+    }
+    return {"theme": [theme]};
+  }
+
   clayConfig.on(clayConfig.EVENTS.AFTER_BUILD, function() {
     var themeSelect = clayConfig.getItemById('Theme');
     var currentTheme = themeSelect.get();
     if (currentTheme) applyTheme(currentTheme);
-    themeSelect.on('change', function() { applyTheme(this.get()); });
     var colorSetRadio = clayConfig.getItemById('ColorSet');
+    var themeExport = clayConfig.getItemById('ThemeExport');
+    themeSelect.on('change', function() { applyTheme(this.get()); });
     colorSetRadio.on('change', function() { themeSelect.set(themeSelect.config.defaultValue); });
     for (var i = 0; i < colorKeys.length; i++) {
       var key = colorKeys[i];
@@ -127,5 +142,12 @@ module.exports = function(minified) {
     }
     updatePreview('PreviewSet1', 1);
     updatePreview('PreviewSet2', 2);
+    var exportButton = clayConfig.getItemById('ExportThemes');
+    if (exportButton && themeExport) {
+      exportButton.on('click', function() {
+        var json = JSON.stringify([buildThemeObject(1), buildThemeObject(2)], null, 2);
+        themeExport.set(json);
+      });
+    }
   });
 };

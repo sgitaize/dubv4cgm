@@ -324,6 +324,17 @@
     },
 
     {
+      type: 'section',
+      items: [
+        { type: 'heading', defaultValue: 'Export Themes' },
+        { type: 'text', defaultValue: '<p>Tap the Export button, then select all text in the area below and copy.</p>' },
+        { type: 'themeexport', id: 'ThemeExport', defaultValue: '' },
+        { type: 'button', id: 'ExportThemes', defaultValue: 'Export' },
+        { type: 'text', defaultValue: '<p>If you want to add your theme to the built-in themes, submit a PR or an issue at <a href="https://codeberg.org/lightrush/91-dub-v5" target="_blank">https://codeberg.org/lightrush/91-dub-v5</a> and paste it there.</p>' }
+      ]
+    },
+
+    {
       type: 'submit',
       defaultValue: 'Save Settings'
     }

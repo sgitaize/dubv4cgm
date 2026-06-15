@@ -6,6 +6,7 @@ var themes = require('./themes.json');
 
 var clay = new Clay(clayConfig, customClay, { autoHandleEvents: false });
 clay.registerComponent(require('./components/preview'));
+clay.registerComponent(require('./components/themeexport'));
 
 var SETTINGS_STORAGE_KEY = '91dub_settings';
 var HANDSHAKE_KEY = 9999;
