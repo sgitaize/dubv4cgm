@@ -1,5 +1,8 @@
 # Changelog
 
+## v5.4.1
+- Updated both Pebble logos
+
 ## v5.4.0
 - Add the ability to export themes
 
