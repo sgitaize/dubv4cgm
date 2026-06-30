@@ -14,65 +14,30 @@ static TextLayer *health_text_layer;
 static Layer *health_layer, *health_foot_layer, *health_foot2_layer, *health_zee_layer;
 
 static GPath *foot_path_ptr = NULL;
-#if defined(PBL_PLATFORM_EMERY)
 static GPathInfo FOOT_PATH_INFO = {
   .num_points = 13,
   .points = (GPoint []) {{0,1}, {1,1}, {1,0}, {3,0}, {3,1}, {4,1}, {4,4}, {3,4}, {3,7}, {1,7}, {1,5}, {0,5}, {0,1}}
 };
-#else
-static GPathInfo FOOT_PATH_INFO = {
-  .num_points = 13,
-  .points = (GPoint []) {{0,1}, {1,1}, {1,0}, {2,0}, {2,1}, {3,1}, {3,3}, {2,3}, {2,5}, {1,5}, {1,4}, {0,4}, {0,1}}
-};
-#endif
 static GPath *heel_path_ptr = NULL;
-#if defined(PBL_PLATFORM_EMERY)
 static GPathInfo HEEL_PATH_INFO = {
   .num_points = 4,
   .points = (GPoint []) {{1,9}, {3,9}, {3,11}, {1,11}}
 };
-#else
-static GPathInfo HEEL_PATH_INFO = {
-  .num_points = 4,
-  .points = (GPoint []) {{1,7}, {2,7}, {2,8}, {1,8}}
-};
-#endif
 static GPath *zee1_path_ptr = NULL;
-#if defined(PBL_PLATFORM_EMERY)
 static GPathInfo ZEE1_PATH_INFO = {
   .num_points = 6,
   .points = (GPoint []) {{0,3}, {3,3}, {3,4}, {0,7}, {0,8}, {3,8}}
 };
-#else
-static GPathInfo ZEE1_PATH_INFO = {
-  .num_points = 6,
-  .points = (GPoint []) {{0,2}, {2,2}, {2,3}, {0,5}, {0,6}, {2,6}}
-};
-#endif
 static GPath *zee2_path_ptr = NULL;
-#if defined(PBL_PLATFORM_EMERY)
 static GPathInfo ZEE2_PATH_INFO = {
   .num_points = 6,
   .points = (GPoint []) {{4,1}, {8,1}, {8,3}, {4,7}, {4,8}, {8,8}}
 };
-#else
-static GPathInfo ZEE2_PATH_INFO = {
-  .num_points = 6,
-  .points = (GPoint []) {{3,1}, {6,1}, {6,2}, {3,5}, {3,6}, {6,6}}
-};
-#endif
 static GPath *zee3_path_ptr = NULL;
-#if defined(PBL_PLATFORM_EMERY)
 static GPathInfo ZEE3_PATH_INFO = {
   .num_points = 6,
   .points = (GPoint []) {{9,0}, {15,0}, {15,1}, {9,7}, {9,8}, {15,8}}
 };
-#else
-static GPathInfo ZEE3_PATH_INFO = {
-  .num_points = 6,
-  .points = (GPoint []) {{7,0}, {11,0}, {11,1}, {7,5}, {7,6}, {11,6}}
-};
-#endif
 
 
 
@@ -117,20 +82,6 @@ void health_update() {
       snprintf(str2, sizeof(str2), "%dM", minutes);
     }
 
-    #if defined (PBL_ROUND)
-      GRect r = layer_get_frame(health_layer);
-      if(hours == 0 && minutes < 10) {
-        r.origin.x = 76;
-      } else if(hours == 0) {
-        r.origin.x = 73;
-      } else if(hours < 10 && minutes < 10) {
-        r.origin.x = 67;
-      } else {
-        r.origin.x = 62;
-      }
-      layer_set_frame(health_layer, r);
-    #endif
-
     layer_set_hidden(health_zee_layer, false);
     layer_set_hidden(health_foot_layer, true);
     layer_set_hidden(health_foot2_layer, true);
@@ -138,18 +89,6 @@ void health_update() {
     //steps
     format_commas(s_steps, str);
     snprintf(str2, sizeof(str2), "%s", str);
-
-    #if defined (PBL_ROUND)
-      GRect r = layer_get_frame(health_layer);
-      if(s_steps < 1000) {
-        r.origin.x = 71;
-      } else if(s_steps < 10000) {
-        r.origin.x = 66;
-      } else {
-        r.origin.x = 61;
-      }
-      layer_set_frame(health_layer, r);
-    #endif
 
     layer_set_hidden(health_zee_layer, true);
     layer_set_hidden(health_foot_layer, false);
@@ -219,11 +158,22 @@ void health_deinit() {
   if(!health_enabled) {
       return;
   }
+  health_service_events_unsubscribe();
+
   gpath_destroy(foot_path_ptr);
   foot_path_ptr = NULL;
 
   gpath_destroy(heel_path_ptr);
   heel_path_ptr = NULL;
+
+  gpath_destroy(zee1_path_ptr);
+  zee1_path_ptr = NULL;
+
+  gpath_destroy(zee2_path_ptr);
+  zee2_path_ptr = NULL;
+
+  gpath_destroy(zee3_path_ptr);
+  zee3_path_ptr = NULL;
 
   layer_destroy(health_foot_layer);
   layer_destroy(health_foot2_layer);

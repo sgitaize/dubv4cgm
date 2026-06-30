@@ -18,46 +18,24 @@ static const int logo_resource_ids[LOGOS_COUNT] = {
 };
 
 static GPath *arrow_left_path_ptr = NULL;
-#if defined(PBL_PLATFORM_EMERY)
 static GPathInfo ARROW_LEFT_PATH_INFO = {
   .num_points = 5,
   .points = (GPoint []) {{0,3}, {5,0}, {5,7}, {0,4}, {0,3}}
 };
-#else
-static GPathInfo ARROW_LEFT_PATH_INFO = {
-  .num_points = 5,
-  .points = (GPoint []) {{0,2}, {4,0}, {4,5}, {0,3}, {0,2}}
-};
-#endif
 
 static GPath *arrow_right_path_ptr = NULL;
-#if defined(PBL_PLATFORM_EMERY)
 static GPathInfo ARROW_RIGHT_PATH_INFO = {
   .num_points = 5,
   .points = (GPoint []) {{0,0}, {5,3}, {5,4}, {0,7}, {0,0}}
 };
-#else
-static GPathInfo ARROW_RIGHT_PATH_INFO = {
-  .num_points = 5,
-  .points = (GPoint []) {{0,0}, {4,2}, {4,3}, {0,5}, {0,0}}
-};
-#endif
 
 static GPath *wr_outer_path_ptr = NULL;
-#if defined(PBL_PLATFORM_EMERY)
 static GPathInfo WR_OUTER_PATH_INFO = {
   .num_points = 9,
   .points = (GPoint []) {{0,3}, {3,0}, {53,0}, {55,3}, {55,13}, {47,21}, {7,21}, {0,15}, {0,3}}
 };
-#else
-static GPathInfo WR_OUTER_PATH_INFO = {
-  .num_points = 9,
-  .points = (GPoint []) {{0,2}, {2,0}, {39,0}, {41,2}, {41,9}, {35,15}, {5,15}, {0,10}, {0,2}}
-};
-#endif
 
 static GPath *wr_w_path_ptr = NULL;
-#if defined(PBL_PLATFORM_EMERY)
 static GPathInfo WR_W_PATH_INFO = {
   .num_points = 39,
   .points = (GPoint []) {{ 9, 3},{14, 3},{14,12},{16,12},{16, 8},{18, 8},
@@ -68,21 +46,8 @@ static GPathInfo WR_W_PATH_INFO = {
                           {18, 8},{18,12},{16,12},{16,15},{15,15},{15,18},
                           {11,18},{11,11},{ 9,11},{ 9, 3}}
 };
-#else
-static GPathInfo WR_W_PATH_INFO = {
-  .num_points = 39,
-  .points = (GPoint []) {{ 7, 2},{10, 2},{10, 9},{12, 9},{12, 6},{13, 6},
-                          {13, 4},{14, 4},{14, 2},{16, 2},{16, 9},{18, 9},
-                          {18, 7},{19, 7},{19, 4},{20, 4},{20, 2},{22, 2},
-                          {22, 3},{21, 3},{21, 6},{20, 6},{20, 8},{19, 8},
-                          {19,11},{18,11},{18,13},{15,13},{15, 6},
-                          {13, 6},{13, 9},{12, 9},{12,11},{11,11},{11,13},
-                          { 8,13},{ 8, 8},{ 7, 8},{ 7, 2}}
-};
-#endif
 
 static GPath *wr_r_path_ptr = NULL;
-#if defined(PBL_PLATFORM_EMERY)
 static GPathInfo WR_R_PATH_INFO = {
   .num_points = 27,
   .points = (GPoint []) {{32, 3},{42, 3},{42, 4},{43, 4},{43, 5},{45, 5},
@@ -91,16 +56,6 @@ static GPathInfo WR_R_PATH_INFO = {
                           {35,14},{34,14},{34,18},{30,18},
                           {30,15},{31,15},{31, 7},{32, 7},{32, 3}}
 };
-#else
-static GPathInfo WR_R_PATH_INFO = {
-  .num_points = 27,
-  .points = (GPoint []) {{24, 2},{31, 2},{31, 3},{32, 3},{32, 4},{33, 4},
-                          {33, 7},{32, 7},{32, 8},{31, 8},{31,10},{32,10},
-                          {32,13},{29,13},{29,10},{28,10},{28, 9},{26, 9},
-                          {26,10},{25,10},{25,13},{22,13},
-                          {22,11},{23,11},{23, 5},{24, 5},{24, 2}}
-};
-#endif
 
 /*
 d1  Horizontal Line Top
@@ -125,11 +80,9 @@ static void decorations_load_logo(int8_t index) {
   }
 
   logo_image = gbitmap_create_with_resource(logo_resource_ids[index]);
-  #ifdef PBL_COLOR
-    GColor * xcolors = gbitmap_get_palette(logo_image);
-    xcolors[0].argb = color_helper(colors[c_bg4], global_settings.Invert).argb;
-    xcolors[1].argb = color_helper(colors[c_d9], global_settings.Invert).argb;
-  #endif
+  GColor * xcolors = gbitmap_get_palette(logo_image);
+  xcolors[0].argb = color_helper(colors[c_bg4], global_settings.Invert).argb;
+  xcolors[1].argb = color_helper(colors[c_d9], global_settings.Invert).argb;
   bitmap_layer_set_bitmap(logo_layer, logo_image);
 }
 
@@ -144,11 +97,9 @@ void decorations_settings_callback() {
   text_layer_set_text_color(button_next_layer, color_helper(colors[c_d7], global_settings.Invert));
   text_layer_set_text_color(button_prev_layer, color_helper(colors[c_d7], global_settings.Invert));
 
-  #ifdef PBL_COLOR
-      GColor * xcolors = gbitmap_get_palette(logo_image);
-      xcolors[0].argb = color_helper(colors[c_bg4], global_settings.Invert).argb;
-      xcolors[1].argb = color_helper(colors[c_d9], global_settings.Invert).argb;
-  #endif
+  GColor * xcolors = gbitmap_get_palette(logo_image);
+  xcolors[0].argb = color_helper(colors[c_bg4], global_settings.Invert).argb;
+  xcolors[1].argb = color_helper(colors[c_d9], global_settings.Invert).argb;
 
   decorations_load_logo(global_settings.Logo);
 
@@ -302,21 +253,6 @@ void decorations_init() {
 
   settings_register_callback(decorations_settings_callback, SETTINGS_CALLBACK_DECORATIONS);
 
-
-  #if defined (PBL_ROUND)
-    layer_set_hidden(button_back_icon_layer, true);
-    layer_set_hidden(button_next_icon_layer, true);
-    layer_set_hidden(button_prev_icon_layer, true);
-    layer_set_hidden(text_layer_get_layer(button_back_layer), true);
-    layer_set_hidden(text_layer_get_layer(button_next_layer), true);
-    layer_set_hidden(text_layer_get_layer(button_prev_layer), true);
-
-    layer_set_hidden(bitmap_layer_get_layer(logo_layer), true);
-
-    layer_set_hidden(text_layer_get_layer(water_layer), true);
-    layer_set_hidden(text_layer_get_layer(resist_layer), true);
-
-  #endif
 
   //animation_slide_in(decorations_layer, 700, RIGHT);
   //animation_slide_in(wr_outer_layer, 700, UP);

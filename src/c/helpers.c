@@ -63,10 +63,8 @@ GColor color_inverted(GColor source) {
     inverted= GColorWhite;
   if(gcolor_equal(source, GColorWhite))
     inverted= GColorBlack;
-  #ifdef PBL_COLOR
-    if(!gcolor_equal(source, GColorClear)) //GColorClear should not change
-      inverted.argb= source.argb ^ 0b00111111;
-  #endif
+  if(!gcolor_equal(source, GColorClear)) //GColorClear should not change
+    inverted.argb= source.argb ^ 0b00111111;
   return inverted;
 }
 
@@ -145,19 +143,8 @@ TextLayer *text_layer_create_detailed(GRect frame, bool hidden, GColor backgroun
 }
 
 GColor color_helper(GColor color, uint8_t inverted) {
-  #ifdef PBL_BW
-    if(inverted) {
-      if(gcolor_equal(color, GColorBlack)) {
-        color = GColorWhite;
-      }
-      else {
-        color = GColorBlack;
-      }
-    }
-  #else
-    if(inverted) {
-      color = color_inverted(color);
-    }
-  #endif
+  if(inverted) {
+    color = color_inverted(color);
+  }
   return color;
 }

@@ -1,22 +1,33 @@
 {
   "name": "91-dub-v5",
   "author": "lightrush",
-  "version": "5.4.1",
-  "keywords": ["pebble-app"],
+  "version": "5.5.0",
+  "keywords": [
+    "pebble-app"
+  ],
   "private": true,
+  "scripts": {
+    "build-fonts": "node scripts/build-fonts.js"
+  },
   "dependencies": {
-    "@rebble/clay": "^1.0.8"
+    "@rebble/clay": "^1.0.8",
+    "pebble-fctx": "^1.6.5"
   },
   "pebble": {
     "displayName": "91 Dub v5",
     "uuid": "97b06619-9dff-43ba-8f58-cf57bcbc2a75",
     "sdkVersion": "3",
     "enableMultiJS": true,
-    "targetPlatforms": ["emery"],
+    "targetPlatforms": [
+      "emery"
+    ],
     "watchapp": {
       "watchface": true
     },
-    "capabilities": ["configurable", "health"],
+    "capabilities": [
+      "configurable",
+      "health"
+    ],
     "messageKeys": [
       "Health",
       "Blink",
@@ -33,67 +44,84 @@
       "SwitchStart",
       "SwitchEnd",
       "Logo",
-      "Set1_bg1", "Set1_bg2", "Set1_bg3", "Set1_bg4",
-      "Set1_bi1", "Set1_bi2", "Set1_bi3", "Set1_bi4",
-      "Set1_bl1", "Set1_bl2", "Set1_bl3", "Set1_bl4",
-      "Set1_d1", "Set1_d2", "Set1_d3", "Set1_d4", "Set1_d5",
-      "Set1_d6", "Set1_d7", "Set1_d8", "Set1_d9",
-      "Set1_t1", "Set1_t2", "Set1_t3", "Set1_t4",
-      "Set2_bg1", "Set2_bg2", "Set2_bg3", "Set2_bg4",
-      "Set2_bi1", "Set2_bi2", "Set2_bi3", "Set2_bi4",
-      "Set2_bl1", "Set2_bl2", "Set2_bl3", "Set2_bl4",
-      "Set2_d1", "Set2_d2", "Set2_d3", "Set2_d4", "Set2_d5",
-      "Set2_d6", "Set2_d7", "Set2_d8", "Set2_d9",
-      "Set2_t1", "Set2_t2", "Set2_t3", "Set2_t4",
+      "Set1_bg1",
+      "Set1_bg2",
+      "Set1_bg3",
+      "Set1_bg4",
+      "Set1_bi1",
+      "Set1_bi2",
+      "Set1_bi3",
+      "Set1_bi4",
+      "Set1_bl1",
+      "Set1_bl2",
+      "Set1_bl3",
+      "Set1_bl4",
+      "Set1_d1",
+      "Set1_d2",
+      "Set1_d3",
+      "Set1_d4",
+      "Set1_d5",
+      "Set1_d6",
+      "Set1_d7",
+      "Set1_d8",
+      "Set1_d9",
+      "Set1_t1",
+      "Set1_t2",
+      "Set1_t3",
+      "Set1_t4",
+      "Set2_bg1",
+      "Set2_bg2",
+      "Set2_bg3",
+      "Set2_bg4",
+      "Set2_bi1",
+      "Set2_bi2",
+      "Set2_bi3",
+      "Set2_bi4",
+      "Set2_bl1",
+      "Set2_bl2",
+      "Set2_bl3",
+      "Set2_bl4",
+      "Set2_d1",
+      "Set2_d2",
+      "Set2_d3",
+      "Set2_d4",
+      "Set2_d5",
+      "Set2_d6",
+      "Set2_d7",
+      "Set2_d8",
+      "Set2_d9",
+      "Set2_t1",
+      "Set2_t2",
+      "Set2_t3",
+      "Set2_t4",
       "Theme",
       "ColorSet",
       "Set1_lightColorEnabled",
       "Set2_lightColorEnabled",
       "Set1_lightColor",
-      "Set2_lightColor"
+      "Set2_lightColor",
+      "FontFaceDigital",
+      "UseAntialiasing",
+      "ColorBias"
     ],
     "resources": {
       "media": [
         {
           "characterRegex": "[:0-9]",
           "file": "fonts/DS-Digital-Bold.ttf",
-          "name": "FONT_DIGITALE_71",
+          "name": "FONT_DIGITALE_80",
           "type": "font"
         },
         {
           "characterRegex": "[:0-9]",
           "file": "fonts/DS-Digital-Bold.ttf",
-          "name": "FONT_DIGITALE_56",
+          "name": "FONT_DIGITALE_68",
           "type": "font"
         },
         {
           "characterRegex": "[:0-9A-Z ]",
           "file": "fonts/DS-Digital-Bold.ttf",
-          "name": "FONT_DIGITALE_22",
-          "type": "font"
-        },
-        {
-          "characterRegex": "[0-9 A-Za-z%.:, --/' ~]",
-          "file": "fonts/lucon.ttf",
-          "name": "FONT_LUCIDIA_10",
-          "type": "font"
-        },
-        {
-          "characterRegex": "[:0-9]",
-          "file": "fonts/DS-Digital-Bold.ttf",
-          "name": "FONT_DIGITALE_96",
-          "type": "font"
-        },
-        {
-          "characterRegex": "[:0-9]",
-          "file": "fonts/DS-Digital-Bold.ttf",
-          "name": "FONT_DIGITALE_76",
-          "type": "font"
-        },
-        {
-          "characterRegex": "[:0-9A-Z ]",
-          "file": "fonts/DS-Digital-Bold.ttf",
-          "name": "FONT_DIGITALE_30",
+          "name": "FONT_DIGITALE_28",
           "type": "font"
         },
         {
@@ -101,6 +129,57 @@
           "file": "fonts/lucon.ttf",
           "name": "FONT_LUCIDIA_14",
           "type": "font"
+        },
+        {
+          "characterRegex": "[:0-9]",
+          "file": "fonts/DSEG7ClassicMini-BoldItalic.ttf",
+          "name": "FONT_DSEG_52",
+          "type": "font"
+        },
+        {
+          "characterRegex": "[:0-9]",
+          "file": "fonts/DSEG7ClassicMini-BoldItalic.ttf",
+          "name": "FONT_DSEG_44",
+          "type": "font"
+        },
+        {
+          "characterRegex": "[:0-9A-Z ]",
+          "file": "fonts/DSEG7ClassicMini-BoldItalic.ttf",
+          "name": "FONT_DSEG_18",
+          "type": "font"
+        },
+        {
+          "characterRegex": "[:0-9]",
+          "file": "fonts/DSEG7Classic-BoldItalic.ttf",
+          "name": "FONT_DSEG_BOLD_52",
+          "type": "font"
+        },
+        {
+          "characterRegex": "[:0-9]",
+          "file": "fonts/DSEG7Classic-BoldItalic.ttf",
+          "name": "FONT_DSEG_BOLD_44",
+          "type": "font"
+        },
+        {
+          "characterRegex": "[:0-9A-Z ]",
+          "file": "fonts/DSEG7Classic-BoldItalic.ttf",
+          "name": "FONT_DSEG_BOLD_18",
+          "type": "font"
+        },
+        {
+          "file": "fonts/DS-Digital-Bold.ffont",
+          "name": "FONT_DIGITALE_FFONT",
+          "type": "raw"
+        },
+        {
+          "file": "fonts/DSEG7ClassicMini-BoldItalic.ffont",
+          "name": "FONT_DSEG_FFONT",
+          "type": "raw"
+        },
+        {
+          "file": "fonts/DSEG7Classic-BoldItalic.ffont",
+          "name": "FONT_DSEG_BOLD_FFONT",
+          "type": "raw"
         },
         {
           "file": "images/pebble-logo-old.png",
@@ -120,5 +199,8 @@
         }
       ]
     }
+  },
+  "devDependencies": {
+    "pebble-fctx-compiler": "^1.2.2"
   }
 }

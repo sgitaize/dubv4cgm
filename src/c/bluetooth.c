@@ -10,17 +10,10 @@ static Layer *bluetooth_layer, *bluetooth_icon_layer, *bluetooth_circle_layer;
 static bool IsBluetoothConnected = true;
 
 static GPath *bt_path_ptr = NULL;
-#if defined(PBL_PLATFORM_EMERY)
 static GPathInfo BT_PATH_INFO = {
   .num_points = 18,
   .points = (GPoint []) {{0, 1}, {3, 4}, {4, 4}, {4, 0}, {5, 0}, {8, 3}, {5, 5}, {8, 8}, {5, 11}, {4, 11}, {4, 7}, {3, 7}, {0, 9}, {3, 7}, {4, 7}, {4, 4}, {3, 4}, {0, 1}}
 };
-#else
-static GPathInfo BT_PATH_INFO = {
-  .num_points = 18,
-  .points = (GPoint []) {{0, 1}, {2, 3}, {3, 3}, {3, 0}, {4, 0}, {6, 2}, {4, 4}, {6, 6}, {4, 8}, {3, 8}, {3, 5}, {2, 5}, {0, 7}, {2, 5}, {3, 5}, {3, 3}, {2, 3}, {0, 1}}
-};
-#endif
 
 /*
 bl1 Bluetooth Circle Connected
@@ -56,16 +49,8 @@ void bluetooth_icon_toggle(uint8_t BluetoothVibe) {
     if(BluetoothVibe && !powerSaveEngaged) {
       vibes_long_pulse();
     }
-    #ifndef PBL_COLOR
-      layer_set_hidden(bluetooth_circle_layer, true);
-      layer_set_hidden(bluetooth_icon_layer, true);
-    #endif
   }
   else if(IsBluetoothConnected) {
-    #ifndef PBL_COLOR
-      layer_set_hidden(bluetooth_circle_layer, false);
-      layer_set_hidden(bluetooth_icon_layer, false);
-    #endif
   }
   layer_mark_dirty(bluetooth_circle_layer);
   layer_mark_dirty(bluetooth_icon_layer);

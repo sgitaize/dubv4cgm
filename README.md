@@ -19,6 +19,20 @@ pebble build
 pebble install --phone <device>
 ```
 
+### Regenerating ffont Files
+
+The `.ffont` files in `resources/fonts/` are generated from the `.ttf` source
+fonts with character subsetting. To regenerate them:
+
+```bash
+npm run build-fonts
+```
+
+This requires `pyftsubset` (fonttools) and `fontforge` to be installed.
+
+The subset of characters kept for each font is determined by the
+`characterRegex` values in `package.json`'s resource entries.
+
 ## Development
 
 ### Local agent skills

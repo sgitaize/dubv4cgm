@@ -3,6 +3,11 @@ build/*
 .lock-waf_*_build
 node_modules/
 
+# Screenshots and logs
+pebble_screenshot_*.png
+screenshot_default.png
+log
+
 # Editor/IDE
 .vscode/
 .idea/
@@ -12,3 +17,6 @@ node_modules/
 
 # Linked skills
 .agents/skills/pebble-watchface
+
+# Agent plans and configs
+.opencode/

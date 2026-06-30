@@ -19,6 +19,18 @@ static uint8_t parse_cstring_uint8(const char *str) {
   return v;
 }
 
+static int8_t parse_cstring_int8(const char *str) {
+  if (!str) return 0;
+  int8_t v = 0;
+  int i = 0;
+  bool neg = false;
+  if (str[0] == '-') { neg = true; i = 1; }
+  for (; str[i] && str[i] >= '0' && str[i] <= '9'; i++) {
+    v = v * 10 + (str[i] - '0');
+  }
+  return neg ? -v : v;
+}
+
 static void clay_wrapper_inbox(DictionaryIterator *iter, void *context) {
   (void)context;
   int cnt = 0;
@@ -85,7 +97,8 @@ static void clay_wrapper_inbox(DictionaryIterator *iter, void *context) {
     // Select settings (sent as cstring "0", "1", "2")
     else if (key == MESSAGE_KEY_Blink)     global_settings.Blink = parse_cstring_uint8(t->value->cstring);
     else if (key == MESSAGE_KEY_SwitchSet) global_settings.SwitchSet = parse_cstring_uint8(t->value->cstring);
-    else if (key == MESSAGE_KEY_Logo)      global_settings.Logo = parse_cstring_uint8(t->value->cstring);
+    else if (key == MESSAGE_KEY_Logo)              global_settings.Logo = parse_cstring_uint8(t->value->cstring);
+    else if (key == MESSAGE_KEY_FontFaceDigital)   global_settings.FontFaceDigital = parse_cstring_uint8(t->value->cstring);
 
     // Time settings (sent as cstring "HH:MM")
     else if (key == MESSAGE_KEY_PS_Start)      global_settings.PS_Start = (uint8_t)parse_time_to_halfday(t->value->cstring);
@@ -102,6 +115,8 @@ static void clay_wrapper_inbox(DictionaryIterator *iter, void *context) {
     else if (key == MESSAGE_KEY_BatteryHide)   global_settings.BatteryHide = (uint8_t)t->value->int32;
     else if (key == MESSAGE_KEY_Seconds)       global_settings.Seconds = (uint8_t)t->value->int32;
     else if (key == MESSAGE_KEY_PowerSave)     global_settings.PowerSave = (uint8_t)t->value->int32;
+    else if (key == MESSAGE_KEY_UseAntialiasing) global_settings.UseAntialiasing = (uint8_t)t->value->int32;
+    else if (key == MESSAGE_KEY_ColorBias) global_settings.ColorBias = parse_cstring_int8(t->value->cstring);
     else if (key == MESSAGE_KEY_Set1_lightColorEnabled) global_settings.LightColorEnabled1 = (uint8_t)t->value->int32;
     else if (key == MESSAGE_KEY_Set2_lightColorEnabled) global_settings.LightColorEnabled2 = (uint8_t)t->value->int32;
 

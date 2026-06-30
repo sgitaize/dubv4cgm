@@ -76,6 +76,15 @@ void settings_process_tuple(Tuple *new_tuple) {
     case LIGHT_COLOR_2_KEY:
       colorsSet2[c_lc] = GColorFromHEX(new_tuple->value->int32);
       break;
+    case FONTFACEDIGITAL_KEY:
+      global_settings.FontFaceDigital = new_tuple->value->uint8;
+      break;
+    case USEANTIALIASING_KEY:
+      global_settings.UseAntialiasing = new_tuple->value->uint8;
+      break;
+    case COLORBIAS_KEY:
+      global_settings.ColorBias = (int8_t)new_tuple->value->int32;
+      break;
     case HEALTH_KEY:
       global_settings.Health = new_tuple->value->uint8;
       break;
@@ -118,31 +127,27 @@ void settings_process_tuple(Tuple *new_tuple) {
     case SWITCH_END_KEY:
       global_settings.SwitchEnd = new_tuple->value->uint8;
       break;
-    case SET_KEY:
-      #ifdef PBL_COLOR
-        ////APP_LOG(APP_LOG_LEVEL_INFO, "color set1 data: %s", new_tuple->value->cstring) ;
-        cnt = strlen(new_tuple->value->cstring ) >>1;
-        if (cnt>COLORS_NUM) {
-          cnt=COLORS_NUM;
-        }
-        for (int i=0;i<cnt;i++) {
-          colorsSet1[i].argb= (hex_to_num(new_tuple->value->cstring[i*2]) << 4) +
-                                         hex_to_num(new_tuple->value->cstring[i*2+1]);
-        }
-      #endif
+   case SET_KEY:
+      ////APP_LOG(APP_LOG_LEVEL_INFO, "color set1 data: %s", new_tuple->value->cstring) ;
+      cnt = strlen(new_tuple->value->cstring ) >>1;
+      if (cnt>COLORS_NUM) {
+        cnt=COLORS_NUM;
+      }
+      for (int i=0;i<cnt;i++) {
+        colorsSet1[i].argb= (hex_to_num(new_tuple->value->cstring[i*2]) << 4) +
+                                        hex_to_num(new_tuple->value->cstring[i*2+1]);
+      }
       break;
     case SET2_KEY:
-      #ifdef PBL_COLOR
-        ////APP_LOG(APP_LOG_LEVEL_INFO, "color set2 data: %s", new_tuple->value->cstring) ;
-        cnt = strlen(new_tuple->value->cstring ) >>1;
-        if (cnt>COLORS_NUM) {
-          cnt=COLORS_NUM;
-        }
-        for (int i=0;i<cnt;i++) {
-          colorsSet2[i].argb= (hex_to_num(new_tuple->value->cstring[i*2]) << 4) +
-                                         hex_to_num(new_tuple->value->cstring[i*2+1]);
-        }
-      #endif
+      ////APP_LOG(APP_LOG_LEVEL_INFO, "color set2 data: %s", new_tuple->value->cstring) ;
+      cnt = strlen(new_tuple->value->cstring ) >>1;
+      if (cnt>COLORS_NUM) {
+        cnt=COLORS_NUM;
+      }
+      for (int i=0;i<cnt;i++) {
+        colorsSet2[i].argb= (hex_to_num(new_tuple->value->cstring[i*2]) << 4) +
+                                        hex_to_num(new_tuple->value->cstring[i*2+1]);
+      }
       break;
   }
 }
@@ -153,7 +158,6 @@ void update_settings() {
 
   if (!settingsBusy && appStarted) {
     settingsBusy = true;
-    settings_callbacks[SETTINGS_CALLBACK_TIMEDIGITS]();
     for(int i = 0; i < SETTINGS_CALLBACKS_COUNT; i++) {
       if (settings_callbacks[i] != NULL) {
         settings_callbacks[i]();
@@ -212,6 +216,9 @@ void settings_default_values() {
   global_settings.Logo = 0;
   global_settings.LightColorEnabled1 = 0;
   global_settings.LightColorEnabled2 = 0;
+  global_settings.FontFaceDigital = 0;
+  global_settings.UseAntialiasing = 0;
+  global_settings.ColorBias = 0;
   colors[c_lc] = GColorWhite;
   colors[c_bg1] = GColorWhite;
   colors[c_bg2] = GColorBlack;
@@ -219,13 +226,13 @@ void settings_default_values() {
   colors[c_bg4] = GColorBlack;
 
   colors[c_bi1] = GColorBlack;
-  colors[c_bi2] = PBL_IF_COLOR_ELSE(GColorOrange, GColorBlack);
-  colors[c_bi3] = PBL_IF_COLOR_ELSE(GColorRed, GColorBlack);
-  colors[c_bi4] = PBL_IF_COLOR_ELSE(GColorRed, GColorBlack);
+  colors[c_bi2] = GColorOrange;
+  colors[c_bi3] = GColorRed;
+  colors[c_bi4] = GColorRed;
 
-  colors[c_bl1] = PBL_IF_COLOR_ELSE(GColorDukeBlue, GColorWhite);
-  colors[c_bl2] = PBL_IF_COLOR_ELSE(GColorLightGray, GColorBlack);
-  colors[c_bl3] = PBL_IF_COLOR_ELSE(GColorRed, GColorWhite);
+  colors[c_bl1] = GColorDukeBlue;
+  colors[c_bl2] = GColorLightGray;
+  colors[c_bl3] = GColorRed;
   colors[c_bl4] = GColorWhite;
 
   colors[c_d1]  = GColorWhite;
@@ -301,14 +308,12 @@ void settings_core_init() {
   if(persist_exists(SETTINGS_KEY)) {
     persist_read_data(SETTINGS_KEY, &global_settings, sizeof(global_settings));
   }
-  #ifdef PBL_COLOR
-    if(persist_exists(COLORSET1_KEY)) {
-      persist_read_data(COLORSET1_KEY, &colorsSet1, sizeof(colorsSet1));
-    }
-    if(persist_exists(COLORSET2_KEY)) {
-      persist_read_data(COLORSET2_KEY, &colorsSet2, sizeof(colorsSet2));
-    }
-  #endif
+  if(persist_exists(COLORSET1_KEY)) {
+    persist_read_data(COLORSET1_KEY, &colorsSet1, sizeof(colorsSet1));
+  }
+  if(persist_exists(COLORSET2_KEY)) {
+    persist_read_data(COLORSET2_KEY, &colorsSet2, sizeof(colorsSet2));
+  }
 
   time_t now = time(NULL);
   struct tm *tick_time = localtime(&now);
@@ -336,10 +341,8 @@ void settings_init() {
 void settings_save(void *data) {
   delayed_save =NULL;
   persist_write_data(SETTINGS_KEY, &global_settings, sizeof(global_settings));
-  #ifdef PBL_COLOR
   persist_write_data(COLORSET1_KEY, &colorsSet1, sizeof(colors));
   persist_write_data(COLORSET2_KEY, &colorsSet2, sizeof(colors));
-  #endif
 }
 
 void settings_deinit() {

@@ -47,6 +47,9 @@ typedef struct Settings {
   uint8_t Logo;
   uint8_t LightColorEnabled1;
   uint8_t LightColorEnabled2;
+  uint8_t FontFaceDigital;
+  uint8_t UseAntialiasing;
+  int8_t ColorBias;
 } __attribute__((__packed__)) Settings;
 
 extern Settings global_settings;
@@ -63,7 +66,8 @@ enum {
   POWERSAVE_KEY, PS_START_KEY, PS_END_KEY,
   SWITCHSET_KEY, SWITCH_START_KEY, SWITCH_END_KEY, HEALTH_KEY,
   LOGO_KEY, LIGHT_COLOR_ENABLED_1_KEY, LIGHT_COLOR_ENABLED_2_KEY,
-  LIGHT_COLOR_1_KEY, LIGHT_COLOR_2_KEY
+  LIGHT_COLOR_1_KEY, LIGHT_COLOR_2_KEY,
+  FONTFACEDIGITAL_KEY, USEANTIALIASING_KEY, COLORBIAS_KEY
 };
 
 #define SET_KEY  200

@@ -1,5 +1,9 @@
 # Changelog
 
+## v5.5.0
+
+- Add new fonts for time and date along with anti-aliasing
+
 ## v5.4.1
 - Updated both Pebble logos
 

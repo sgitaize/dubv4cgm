@@ -7,7 +7,7 @@
 #include "fonts.h"
 
 
-static Layer *battery_layer, *bolt_layer;
+static Layer *battery_layer;
 static TextLayer *battery_percent_layer;
 
 static bool batteryCharging = false;
@@ -15,17 +15,10 @@ static uint8_t batteryPercent;
 
 static GPath *bolt_path_ptr = NULL;
 
-#if defined(PBL_PLATFORM_EMERY)
 static GPathInfo BOLT_PATH_INFO = {
   .num_points = 13,
   .points = (GPoint []) {{5,5},{8,5},{8,4},{11,4},{11,3},{11,5},{16,5},{14,5},{14,7},{11,7},{11,8},{11,5},{15,5}}
 };
-#else
-static GPathInfo BOLT_PATH_INFO = {
-  .num_points = 13,
-  .points = (GPoint []) {{4,4},{6,4},{6,3},{8,3},{8,2},{8,4},{12,4},{10,4},{10,5},{8,5},{8,6},{8,4},{11,4}}
-};
-#endif
 
 /*
 bi1 Battery Indicator
@@ -97,16 +90,14 @@ void battery_init() {
 
   battery_percent_layer = text_layer_create_detailed(BATTERY_PERCENT, false,
                                 GColorClear, color_helper(colors[c_bi1], global_settings.Invert),
-                                PBL_IF_RECT_ELSE(GTextAlignmentRight, GTextAlignmentLeft), font_tiny);
+                                GTextAlignmentRight, font_tiny);
   layer_add_child(my_window_layer, text_layer_get_layer(battery_percent_layer));
 
   bolt_path_ptr = gpath_create(&BOLT_PATH_INFO);
   battery_layer = layer_create(BATTERY_LAYER);
   //layer_set_hidden(battery_layer, true);
   layer_set_update_proc(battery_layer, battery_layer_update_callback);
-  #if defined(PBL_RECT)
-    layer_add_child(my_window_layer, battery_layer);
-  #endif
+  layer_add_child(my_window_layer, battery_layer);
 
   battery_update(battery_state_service_peek());
   battery_state_service_subscribe(&battery_update);
@@ -128,9 +119,7 @@ void battery_deinit() {
 
   text_layer_destroy(battery_percent_layer);
 
-  layer_remove_from_parent(bolt_layer);
   layer_remove_from_parent(battery_layer);
 
-  layer_destroy(bolt_layer);
   layer_destroy(battery_layer);
 }

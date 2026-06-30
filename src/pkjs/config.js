@@ -113,6 +113,17 @@
         },
         {
           type: 'select',
+          messageKey: 'FontFaceDigital',
+          label: 'Digital Font',
+          defaultValue: '0',
+          options: [
+            { label: 'DS-Digital', value: '0' },
+            { label: 'DSEG-Classic-Mini', value: '1' },
+            { label: 'DSEG-Classic-Bold', value: '2' }
+          ]
+        },
+        {
+          type: 'select',
           messageKey: 'Blink',
           label: 'Separator Blink',
           defaultValue: 1,
@@ -127,6 +138,30 @@
           messageKey: 'Invert',
           label: 'Invert Colors',
           defaultValue: false
+        }
+      ]
+    },
+
+    {
+      type: 'section',
+      items: [
+        { type: 'heading', defaultValue: 'Anti-aliasing' },
+        {
+          type: 'toggle',
+          messageKey: 'UseAntialiasing',
+          label: 'Use Anti-aliasing',
+          defaultValue: false
+        },
+        {
+          type: 'select',
+          messageKey: 'ColorBias',
+          label: 'Intensity',
+          defaultValue: '0',
+          options: [
+            { label: '-1', value: '-1' },
+            { label: '0', value: '0' },
+            { label: '+1', value: '1' }
+          ]
         }
       ]
     },
