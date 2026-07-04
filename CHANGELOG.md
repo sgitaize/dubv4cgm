@@ -1,5 +1,9 @@
 # Changelog
 
+## v5.5.1
+
+- Add theme "W-36 Marlin Yellow Dot" by finnbc (#3)
+
 ## v5.5.0
 
 - Add new fonts for time and date along with anti-aliasing
