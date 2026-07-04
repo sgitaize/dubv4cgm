@@ -188,7 +188,10 @@ static void fctx_update_proc(Layer *l, GContext *ctx) {
 
   int start = has_seconds ? 7 : 0;
 
+  GPoint window_offset = layer_get_frame(my_window_layer).origin;
   GPoint center_origin = layer_get_frame(center_layer).origin;
+  center_origin.x += window_offset.x;
+  center_origin.y += window_offset.y;
   #define FCTX_X(d) (dynamic_digit_data[d].left + dynamic_digit_data[d].width + center_origin.x)
   #define FCTX_Y(d) (dynamic_digit_data[d].top + center_origin.y)
 

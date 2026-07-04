@@ -1,5 +1,9 @@
 # Changelog
 
+## v5.5.2
+
+- Fix time and date not shifting when Timeline Peek is active (#2)
+
 ## v5.5.1
 
 - Add theme "W-36 Marlin Yellow Dot" by finnbc (#3)
