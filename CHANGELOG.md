@@ -1,5 +1,9 @@
 # Changelog
 
+## v5.5.3
+
+- Change default branding logo to Pebble new
+
 ## v5.5.2
 
 - Fix time and date not shifting when Timeline Peek is active (#2)

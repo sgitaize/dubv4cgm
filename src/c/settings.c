@@ -213,7 +213,7 @@ void settings_default_values() {
   global_settings.SwitchSet = 0;
   global_settings.SwitchStart = 47;//23:00
   global_settings.SwitchEnd = 15;  //07:00
-  global_settings.Logo = 0;
+  global_settings.Logo = 1;
   global_settings.LightColorEnabled1 = 0;
   global_settings.LightColorEnabled2 = 0;
   global_settings.FontFaceDigital = 0;

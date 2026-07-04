@@ -193,7 +193,7 @@
           type: 'select',
           messageKey: 'Logo',
           label: 'Branding Logo',
-          defaultValue: '0',
+          defaultValue: '1',
           options: [
             { label: 'Pebble old', value: '0' },
             { label: 'Pebble new', value: '1' }
