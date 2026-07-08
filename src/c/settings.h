@@ -30,6 +30,10 @@ enum {
 #define LOGOS_COUNT 2
 
 typedef struct Settings {
+  // IMPORTANT: 
+  // 
+  // Always add new fields to the END of this struct to maintain
+  // binary compatibility with persisted data from older PBW versions.
   uint8_t Health;
   uint8_t Blink;
   uint8_t Invert;
@@ -50,6 +54,7 @@ typedef struct Settings {
   uint8_t FontFaceDigital;
   uint8_t UseAntialiasing;
   int8_t ColorBias;
+  uint8_t LeftHand;
 } __attribute__((__packed__)) Settings;
 
 extern Settings global_settings;
@@ -67,7 +72,7 @@ enum {
   SWITCHSET_KEY, SWITCH_START_KEY, SWITCH_END_KEY, HEALTH_KEY,
   LOGO_KEY, LIGHT_COLOR_ENABLED_1_KEY, LIGHT_COLOR_ENABLED_2_KEY,
   LIGHT_COLOR_1_KEY, LIGHT_COLOR_2_KEY,
-  FONTFACEDIGITAL_KEY, USEANTIALIASING_KEY, COLORBIAS_KEY
+  FONTFACEDIGITAL_KEY, USEANTIALIASING_KEY, COLORBIAS_KEY, LEFTHAND_KEY
 };
 
 #define SET_KEY  200

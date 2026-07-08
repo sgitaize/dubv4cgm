@@ -138,6 +138,12 @@
           messageKey: 'Invert',
           label: 'Invert Colors',
           defaultValue: false
+        },
+        {
+          type: 'toggle',
+          messageKey: 'LeftHand',
+          label: 'Left Handed',
+          defaultValue: false
         }
       ]
     },

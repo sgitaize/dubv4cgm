@@ -1,7 +1,7 @@
 {
   "name": "91-dub-v5",
   "author": "lightrush",
-  "version": "5.5.3",
+  "version": "5.5.4",
   "keywords": [
     "pebble-app"
   ],
@@ -32,6 +32,7 @@
       "Health",
       "Blink",
       "Invert",
+      "LeftHand",
       "BluetoothVibe",
       "HourlyVibe",
       "BrandingMask",

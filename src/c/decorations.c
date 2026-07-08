@@ -20,13 +20,13 @@ static const int logo_resource_ids[LOGOS_COUNT] = {
 static GPath *arrow_left_path_ptr = NULL;
 static GPathInfo ARROW_LEFT_PATH_INFO = {
   .num_points = 5,
-  .points = (GPoint []) {{0,3}, {5,0}, {5,7}, {0,4}, {0,3}}
+  .points = (GPoint []) {{0,3}, {5,0}, {5,6}, {0,4}, {0,3}}
 };
 
 static GPath *arrow_right_path_ptr = NULL;
 static GPathInfo ARROW_RIGHT_PATH_INFO = {
   .num_points = 5,
-  .points = (GPoint []) {{0,0}, {5,3}, {5,4}, {0,7}, {0,0}}
+  .points = (GPoint []) {{0,0}, {5,3}, {5,4}, {0,6}, {0,0}}
 };
 
 static GPath *wr_outer_path_ptr = NULL;
@@ -110,6 +110,43 @@ void decorations_settings_callback() {
     layer_set_hidden(bitmap_layer_get_layer(logo_layer), false);
   }
 
+  // Update button positions when LeftHand setting changes
+  bool lh = global_settings.LeftHand;
+  bool back_left = !lh;
+  bool next_left = lh;
+  bool prev_left = lh;
+
+  int back_y = lh ? DECORATIONS_LABEL_Y_BOTTOM : DECORATIONS_LABEL_Y_TOP;
+  int next_y = DECORATIONS_LABEL_Y_BOTTOM;
+  int prev_y = DECORATIONS_LABEL_Y_TOP;
+
+  int back_offset = lh ? DECORATIONS_ARROW_TEXT_BOTTOMRIGHT_X_OFFSET : DECORATIONS_ARROW_TEXT_TOPLEFT_X_OFFSET;
+  int next_offset = lh ? DECORATIONS_ARROW_TEXT_TOPLEFT_X_OFFSET : DECORATIONS_ARROW_TEXT_BOTTOMRIGHT_X_OFFSET;
+  int prev_offset = lh ? DECORATIONS_ARROW_TEXT_BOTTOMLEFT_X_OFFSET : DECORATIONS_ARROW_TEXT_TOPRIGHT_X_OFFSET;
+
+  GRect back_label, back_icon;
+  GTextAlignment back_align;
+  dec_compute_button_positions(back_left, &back_label, &back_icon, back_y, &back_align, back_offset);
+
+  GRect next_label, next_icon;
+  GTextAlignment next_align;
+  dec_compute_button_positions(next_left, &next_label, &next_icon, next_y, &next_align, next_offset);
+
+  GRect prev_label, prev_icon;
+  GTextAlignment prev_align;
+  dec_compute_button_positions(prev_left, &prev_label, &prev_icon, prev_y, &prev_align, prev_offset);
+
+  layer_set_frame(text_layer_get_layer(button_back_layer), back_label);
+  layer_set_frame(text_layer_get_layer(button_next_layer), next_label);
+  layer_set_frame(text_layer_get_layer(button_prev_layer), prev_label);
+  layer_set_frame(button_back_icon_layer, back_icon);
+  layer_set_frame(button_next_icon_layer, next_icon);
+  layer_set_frame(button_prev_icon_layer, prev_icon);
+
+  text_layer_set_text_alignment(button_back_layer, back_align);
+  text_layer_set_text_alignment(button_next_layer, next_align);
+  text_layer_set_text_alignment(button_prev_layer, prev_align);
+
   layer_mark_dirty(decorations_layer);
 }
 
@@ -117,26 +154,42 @@ void back_icon_layer_update_callback(Layer *my_layer, GContext* ctx) {
   //Arrow BACK
   graphics_context_set_stroke_color(ctx, color_helper(colors[c_d8], global_settings.Invert));
   graphics_context_set_fill_color(ctx, color_helper(colors[c_d8], global_settings.Invert));
-  gpath_draw_filled(ctx, arrow_left_path_ptr);
-  gpath_draw_outline(ctx, arrow_left_path_ptr);
+  if(global_settings.LeftHand) {
+    gpath_draw_filled(ctx, arrow_right_path_ptr);
+    gpath_draw_outline(ctx, arrow_right_path_ptr);
+  }
+  else {
+    gpath_draw_filled(ctx, arrow_left_path_ptr);
+    gpath_draw_outline(ctx, arrow_left_path_ptr);
+  }
 }
-
 
 void next_icon_layer_update_callback(Layer *my_layer, GContext* ctx) {
   //Arrow NEXT
   graphics_context_set_stroke_color(ctx, color_helper(colors[c_d8], global_settings.Invert));
   graphics_context_set_fill_color(ctx, color_helper(colors[c_d8], global_settings.Invert));
-  gpath_draw_filled(ctx, arrow_right_path_ptr);
-  gpath_draw_outline(ctx, arrow_right_path_ptr);
+  if(global_settings.LeftHand) {
+    gpath_draw_filled(ctx, arrow_left_path_ptr);
+    gpath_draw_outline(ctx, arrow_left_path_ptr);
+  }
+  else {
+    gpath_draw_filled(ctx, arrow_right_path_ptr);
+    gpath_draw_outline(ctx, arrow_right_path_ptr);
+  }
 }
-
 
 void prev_icon_layer_update_callback(Layer *my_layer, GContext* ctx) {
   //Arrow PREV
   graphics_context_set_stroke_color(ctx, color_helper(colors[c_d8], global_settings.Invert));
   graphics_context_set_fill_color(ctx, color_helper(colors[c_d8], global_settings.Invert));
-  gpath_draw_filled(ctx, arrow_right_path_ptr);
-  gpath_draw_outline(ctx, arrow_right_path_ptr);
+  if(global_settings.LeftHand) {
+    gpath_draw_filled(ctx, arrow_left_path_ptr);
+    gpath_draw_outline(ctx, arrow_left_path_ptr);
+  }
+  else {
+    gpath_draw_filled(ctx, arrow_right_path_ptr);
+    gpath_draw_outline(ctx, arrow_right_path_ptr);
+  }
 }
 
 void decorations_layer_update_callback(Layer *my_layer, GContext* ctx) {
@@ -180,16 +233,41 @@ void decorations_init() {
   layer_add_child(my_window_layer, decorations_layer);
   layer_set_update_proc(decorations_layer, decorations_layer_update_callback);
 
+  // Compute label and icon rects for layer creation
+  bool lh = global_settings.LeftHand;
+  bool init_back_left = !lh;
+  bool init_next_left = lh;
+  bool init_prev_left = lh;
 
-  button_back_icon_layer = layer_create(DECORATIONS_BUTTON_BACK_ICON);
+  int init_back_y = lh ? DECORATIONS_LABEL_Y_BOTTOM : DECORATIONS_LABEL_Y_TOP;
+  int init_next_y = DECORATIONS_LABEL_Y_BOTTOM;
+  int init_prev_y = DECORATIONS_LABEL_Y_TOP;
+
+  int init_back_offset = lh ? DECORATIONS_ARROW_TEXT_BOTTOMRIGHT_X_OFFSET : DECORATIONS_ARROW_TEXT_TOPLEFT_X_OFFSET;
+  int init_next_offset = lh ? DECORATIONS_ARROW_TEXT_TOPLEFT_X_OFFSET : DECORATIONS_ARROW_TEXT_BOTTOMRIGHT_X_OFFSET;
+  int init_prev_offset = lh ? DECORATIONS_ARROW_TEXT_BOTTOMLEFT_X_OFFSET : DECORATIONS_ARROW_TEXT_TOPRIGHT_X_OFFSET;
+
+  GRect init_back_label, init_back_icon;
+  GTextAlignment init_back_align;
+  dec_compute_button_positions(init_back_left, &init_back_label, &init_back_icon, init_back_y, &init_back_align, init_back_offset);
+
+  GRect init_next_label, init_next_icon;
+  GTextAlignment init_next_align;
+  dec_compute_button_positions(init_next_left, &init_next_label, &init_next_icon, init_next_y, &init_next_align, init_next_offset);
+
+  GRect init_prev_label, init_prev_icon;
+  GTextAlignment init_prev_align;
+  dec_compute_button_positions(init_prev_left, &init_prev_label, &init_prev_icon, init_prev_y, &init_prev_align, init_prev_offset);
+
+  button_back_icon_layer = layer_create(init_back_icon);
   layer_set_update_proc(button_back_icon_layer, back_icon_layer_update_callback);
   layer_add_child(decorations_layer, button_back_icon_layer);
 
-  button_next_icon_layer = layer_create(DECORATIONS_BUTTON_NEXT_ICON);
+  button_next_icon_layer = layer_create(init_next_icon);
   layer_set_update_proc(button_next_icon_layer, next_icon_layer_update_callback);
   layer_add_child(decorations_layer, button_next_icon_layer);
 
-  button_prev_icon_layer = layer_create(DECORATIONS_BUTTON_PREV_ICON);
+  button_prev_icon_layer = layer_create(init_prev_icon);
   layer_set_update_proc(button_prev_icon_layer, prev_icon_layer_update_callback);
   layer_add_child(decorations_layer, button_prev_icon_layer);
 
@@ -224,25 +302,23 @@ void decorations_init() {
   layer_add_child(decorations_layer, text_layer_get_layer(resist_layer));
 
   // BACK BUTTON LABEL
-  button_back_layer = text_layer_create_detailed(DECORATIONS_BUTTON_BACK_LABEL, false, GColorClear
-                                                 , color_helper(colors[c_d7], global_settings.Invert),
-                                                 GTextAlignmentLeft, font_tiny);
+  button_back_layer = text_layer_create_detailed(init_back_label, false, GColorClear
+                                                    , color_helper(colors[c_d7], global_settings.Invert),
+                                                    init_back_align, font_tiny);
   text_layer_set_text(button_back_layer, "LIGHT");
   layer_add_child(decorations_layer, text_layer_get_layer(button_back_layer));
 
-
   // NEXT BUTTON LABEL
-  button_next_layer = text_layer_create_detailed(DECORATIONS_BUTTON_NEXT_LABEL, false, GColorClear
-                                                 , color_helper(colors[c_d7], global_settings.Invert),
-                                                 GTextAlignmentRight, font_tiny);
+  button_next_layer = text_layer_create_detailed(init_next_label, false, GColorClear
+                                                    , color_helper(colors[c_d7], global_settings.Invert),
+                                                    init_next_align, font_tiny);
   text_layer_set_text(button_next_layer, "NEXT");
   layer_add_child(decorations_layer, text_layer_get_layer(button_next_layer));
 
-
   // PREV BUTTON LABEL
-  button_prev_layer = text_layer_create_detailed(DECORATIONS_BUTTON_PREV_LABEL, false, GColorClear,
-                                                  color_helper(colors[c_d7], global_settings.Invert),
-                                                  GTextAlignmentRight, font_tiny);
+  button_prev_layer = text_layer_create_detailed(init_prev_label, false, GColorClear,
+                                                      color_helper(colors[c_d7], global_settings.Invert),
+                                                      init_prev_align, font_tiny);
   text_layer_set_text(button_prev_layer, "PREV");
   layer_add_child(decorations_layer, text_layer_get_layer(button_prev_layer));
 
@@ -252,7 +328,6 @@ void decorations_init() {
   layer_add_child(decorations_layer, bitmap_layer_get_layer(logo_layer));
 
   settings_register_callback(decorations_settings_callback, SETTINGS_CALLBACK_DECORATIONS);
-
 
   //animation_slide_in(decorations_layer, 700, RIGHT);
   //animation_slide_in(wr_outer_layer, 700, UP);

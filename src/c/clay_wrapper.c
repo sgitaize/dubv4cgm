@@ -109,6 +109,7 @@ static void clay_wrapper_inbox(DictionaryIterator *iter, void *context) {
     // Toggle settings (sent as int32 0 or 1)
     else if (key == MESSAGE_KEY_Health)        global_settings.Health = (uint8_t)t->value->int32;
     else if (key == MESSAGE_KEY_Invert)        global_settings.Invert = (uint8_t)t->value->int32;
+    else if (key == MESSAGE_KEY_LeftHand)      global_settings.LeftHand = (uint8_t)t->value->int32;
     else if (key == MESSAGE_KEY_BluetoothVibe) global_settings.BluetoothVibe = (uint8_t)t->value->int32;
     else if (key == MESSAGE_KEY_HourlyVibe)    global_settings.HourlyVibe = (uint8_t)t->value->int32;
     else if (key == MESSAGE_KEY_BrandingMask)  global_settings.BrandingMask = (uint8_t)t->value->int32;

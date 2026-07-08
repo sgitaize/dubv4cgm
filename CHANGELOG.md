@@ -1,5 +1,9 @@
 # Changelog
 
+## v5.5.4
+
+- Add option for left hand usage (180° rotated)
+
 ## v5.5.3
 
 - Change default branding logo to Pebble new

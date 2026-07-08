@@ -85,6 +85,9 @@ void settings_process_tuple(Tuple *new_tuple) {
     case COLORBIAS_KEY:
       global_settings.ColorBias = (int8_t)new_tuple->value->int32;
       break;
+    case LEFTHAND_KEY:
+      global_settings.LeftHand = new_tuple->value->uint8;
+      break;
     case HEALTH_KEY:
       global_settings.Health = new_tuple->value->uint8;
       break;
@@ -197,7 +200,6 @@ void settings_inbox(DictionaryIterator *iter, void *context) {
   delayed_save= app_timer_register(100, settings_save, NULL);
 }
 
-
 void settings_default_values() {
   global_settings.Health = 0;
   global_settings.Blink = 1;
@@ -219,6 +221,7 @@ void settings_default_values() {
   global_settings.FontFaceDigital = 0;
   global_settings.UseAntialiasing = 0;
   global_settings.ColorBias = 0;
+  global_settings.LeftHand = 0;
   colors[c_lc] = GColorWhite;
   colors[c_bg1] = GColorWhite;
   colors[c_bg2] = GColorBlack;

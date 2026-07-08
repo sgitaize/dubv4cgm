@@ -86,12 +86,45 @@ static const FontLayoutParams font_layouts[] = {
 #define DECORATIONS_LINE_TOP_END GPoint(200, 26)
 #define DECORATIONS_LINE_BOTTOM_START GPoint(0, 203)
 #define DECORATIONS_LINE_BOTTOM_END GPoint(200, 203)
-#define DECORATIONS_BUTTON_BACK_LABEL GRect(21, 28, 47, 14)
-#define DECORATIONS_BUTTON_NEXT_LABEL GRect(146, 185, 34, 14)
-#define DECORATIONS_BUTTON_PREV_LABEL GRect(146, 28, 34, 14)
-#define DECORATIONS_BUTTON_BACK_ICON GRect(10, 33, 7, 8)
-#define DECORATIONS_BUTTON_NEXT_ICON GRect(183, 33, 7, 8)
-#define DECORATIONS_BUTTON_PREV_ICON GRect(183, 191, 7, 8)
+
+// Button vertical positions — labels centered between LINE and PANEL edges
+#define DECORATIONS_LABEL_H 14
+#define DECORATIONS_TEXT_Y_OFFSET 2  // applied after centering to center visual text
+#define DECORATIONS_LABEL_Y_TOP ((DECORATIONS_LINE_TOP_START.y + BACKGROUND_PANEL.origin.y - DECORATIONS_LABEL_H) / 2)
+#define DECORATIONS_LABEL_Y_BOTTOM ((BACKGROUND_PANEL.origin.y + BACKGROUND_PANEL.size.h + DECORATIONS_LINE_BOTTOM_START.y - DECORATIONS_LABEL_H) / 2)
+
+// Arrow / button horizontal positioning — edge-anchored layout
+#define DECORATIONS_ARROW_W                6
+#define DECORATIONS_ARROW_H                7
+#define DECORATIONS_ARROW_EDGE_GAP         10
+#define DECORATIONS_ARROW_LABEL_GAP        5
+#define DECORATIONS_ARROW_TEXT_TOPLEFT_X_OFFSET    -1
+#define DECORATIONS_ARROW_TEXT_TOPRIGHT_X_OFFSET   0
+#define DECORATIONS_ARROW_TEXT_BOTTOMLEFT_X_OFFSET -1
+#define DECORATIONS_ARROW_TEXT_BOTTOMRIGHT_X_OFFSET 1
+#define DECORATIONS_ARROW_LABEL_Y_GAP      6
+
+static inline void dec_compute_button_positions(bool on_left_side, GRect *out_label, GRect *out_icon, int y, GTextAlignment *out_alignment, int offset) {
+    y -= DECORATIONS_TEXT_Y_OFFSET;
+    int w = FULLSCREEN.size.w;
+    int label_w = w - 2 * DECORATIONS_ARROW_EDGE_GAP - DECORATIONS_ARROW_W - DECORATIONS_ARROW_LABEL_GAP;
+
+    if (on_left_side) {
+        out_icon->origin.x = DECORATIONS_ARROW_EDGE_GAP;
+        out_label->origin.x = DECORATIONS_ARROW_EDGE_GAP + DECORATIONS_ARROW_W + DECORATIONS_ARROW_LABEL_GAP + offset;
+        *out_alignment = GTextAlignmentLeft;
+    } else {
+        out_icon->origin.x = w - DECORATIONS_ARROW_EDGE_GAP - DECORATIONS_ARROW_W;
+        out_label->origin.x = DECORATIONS_ARROW_EDGE_GAP + offset;
+        *out_alignment = GTextAlignmentRight;
+    }
+
+    out_icon->origin.y = y + DECORATIONS_ARROW_LABEL_Y_GAP;
+    out_icon->size = (GSize){DECORATIONS_ARROW_W, DECORATIONS_ARROW_H};
+    out_label->origin.y = y;
+    out_label->size = (GSize){label_w, DECORATIONS_LABEL_H};
+}
+
 #define DECORATIONS_BRANDING GRect(0, -5, 200, 40)
 #define DECORATIONS_WR_OUTER GRect(72, 200, 57, 22)
 #define DECORATIONS_WR_WATER GRect(3, 205, 62, 27)

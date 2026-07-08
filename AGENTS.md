@@ -175,7 +175,7 @@ pebble install --logs --phone [PHONE IP/HOST]   # Install on phone with live log
 ## Settings Message Keys
 
 The watchface communicates with the phone via AppMessage using these key categories:
-- **Toggles**: Health, Blink, Invert, BluetoothVibe, HourlyVibe, BrandingMask, BatteryHide, Seconds, PowerSave
+- **Toggles**: Health, Blink, Invert, LeftHand, BluetoothVibe, HourlyVibe, BrandingMask, BatteryHide, Seconds, PowerSave
 - **Time ranges**: PS_Start, PS_End, SwitchStart, SwitchEnd
 - **Color sets**: Set1_bg1..bg4, Set1_bi1..bi4, Set1_bl1..bl4, Set1_d1..d9, Set1_t1..t4 (same for Set2)
 - **Selectors**: SwitchSet (0=manual, 1=timed, 2=tap), Theme, ColorSet
