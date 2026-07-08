@@ -8,7 +8,7 @@ A fork of the great [91 Dub v4.0](https://github.com/orviwan/91-dub-4.0) watchfa
 - Optimized for the new PT2 display resolution with improved digit and icon sizing. Looks better than auto-scaling 91 Dub v4
 - Redesigned settings page, no longer dependent on external web site
 - Preserves all v4.0 customizability, including color sets and themes
-- Added mode for left hand usage (180° rotated)
+- Left-handed mode (180° rotated)
 
 ## Building
 
