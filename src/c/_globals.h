@@ -27,8 +27,8 @@ typedef enum {UP, DOWN, LEFT, RIGHT} direction_t;
 #define BACKGROUND_PANEL_INNER GRect(4, 4, 192, 130)
 
 // BATTERY — terminal position DERIVED from scaled icon dimensions
-#define BATTERY_LAYER GRect(166, 58, 23, 12)
-#define BATTERY_PERCENT GRect(116, 55, 47, 22)
+#define BATTERY_LAYER GRect(162, 58, 23, 12)
+#define BATTERY_PERCENT GRect(120, 47, 40, 28)
 #define BATTERY_ICON GRect(0, 0, 22, 12)
 // terminal: 1px line at right edge, height matches fill, vertically centered
 #define BATTERY_ICON_TERMINAL GRect(22, 2, 1, 8)
@@ -41,11 +41,11 @@ typedef enum {UP, DOWN, LEFT, RIGHT} direction_t;
 #define BATTERY_FILL_CEIL 19
 
 // HEALTH
-#define HEALTH_LAYER GRect(37, 55, 95, 22)
-#define HEALTH_TEXT_LAYER GRect(20, 0, 90, 22)
-#define HEALTH_ZEE_LAYER GRect(0, 4, 19, 9)
-#define HEALTH_FOOT_LAYER GRect(4, 0, 12, 16)
-#define HEALTH_FOOT2_LAYER GRect(11, 4, 12, 16)
+#define HEALTH_LAYER GRect(37, 47, 70, 28)
+#define HEALTH_TEXT_LAYER GRect(20, 0, 60, 28)
+#define HEALTH_ZEE_LAYER GRect(0, 12, 19, 9)
+#define HEALTH_FOOT_LAYER GRect(4, 10, 12, 16)
+#define HEALTH_FOOT2_LAYER GRect(11, 14, 12, 16)
 #define HEALTH_STEP_MIN 400
 
 // BLUETOOTH — circle center/radius scaled from original (5,5,r5) in 13x13 layer
@@ -72,11 +72,11 @@ typedef struct {
 // TIMEDIGITS — base references for dynamic positioning
 #define TIMEDIGITS_CENTER GRect(2, 20, 194, 227)
 #define TIMEDIGITS_DATE GRect(2, 51, 186, 40)
-#define TIMEDIGITS_AMPM GRect(23, 66, 77, 40)
+#define TIMEDIGITS_AMPM GRect(14, 54, 50, 30)
 
 // TIMEDIGITS — per-font layout parameters (emery)
 static const FontLayoutParams font_layouts[] = {
-  [0] = { .group_center_dy = -4, .ss_dy = 23, .ss_gap = 0, .date_bottom_dy = -81, .h_offset = -3 },  // DS-Digital
+  [0] = { .group_center_dy = -4, .ss_dy = 32, .ss_gap = 0, .date_bottom_dy = -81, .h_offset = -3 },  // DS-Digital
   [1] = { .group_center_dy = 1, .ss_dy = 13, .ss_gap = 0, .date_bottom_dy = -84, .h_offset = -2 },  // DSEG
   [2] = { .group_center_dy = 1, .ss_dy = 13, .ss_gap = 0, .date_bottom_dy = -84, .h_offset = -2 },  // DSEG Bold
 };

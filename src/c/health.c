@@ -11,7 +11,11 @@ static bool health_enabled = false;
 #ifdef PBL_HEALTH
 
 static TextLayer *health_text_layer;
+static TextLayer *hr_text_layer = NULL;
 static Layer *health_layer, *health_foot_layer, *health_foot2_layer, *health_zee_layer;
+static Layer *hr_heart_layer = NULL;
+static char hr_text_buf[8] = "";
+static HealthValue s_hr = 0;
 
 static GPath *foot_path_ptr = NULL;
 static GPathInfo FOOT_PATH_INFO = {
@@ -44,8 +48,8 @@ static GPathInfo ZEE3_PATH_INFO = {
 static HealthValue s_sleep, s_deep_sleep, s_steps, s_active, s_distance;
 
 void health_icon_layer_update_callback(Layer *my_layer, GContext* ctx) {
-  graphics_context_set_stroke_color(ctx, color_helper(colors[c_t2], global_settings.Invert));
-  graphics_context_set_fill_color(ctx, color_helper(colors[c_t2], global_settings.Invert));
+  graphics_context_set_stroke_color(ctx, color_helper(colors[c_h1], global_settings.Invert));
+  graphics_context_set_fill_color(ctx, color_helper(colors[c_h1], global_settings.Invert));
   if(s_steps < HEALTH_STEP_MIN) {
     //zzz
     gpath_draw_outline_open(ctx, zee1_path_ptr);
@@ -95,6 +99,34 @@ void health_update() {
     layer_set_hidden(health_foot2_layer, false);
   }
   text_layer_set_text(health_text_layer, str2);
+  text_layer_set_text_color(health_text_layer, color_helper(colors[c_h1], global_settings.Invert));
+
+  if (s_hr > 0) {
+    snprintf(hr_text_buf, sizeof(hr_text_buf), "%d", (int)s_hr);
+    if (hr_text_layer) {
+      text_layer_set_text(hr_text_layer, hr_text_buf);
+      text_layer_set_text_color(hr_text_layer, color_helper(colors[c_h2], global_settings.Invert));
+    }
+    if (hr_heart_layer) layer_set_hidden(hr_heart_layer, false);
+  } else {
+    if (hr_text_layer) text_layer_set_text(hr_text_layer, "");
+    if (hr_heart_layer) layer_set_hidden(hr_heart_layer, true);
+  }
+}
+
+static void hr_heart_update_proc(Layer *layer, GContext *ctx) {
+  (void)layer;
+  if (s_hr <= 0) return;
+  GColor hr_col = color_helper(colors[c_h2], global_settings.Invert);
+  graphics_context_set_fill_color(ctx, hr_col);
+  graphics_context_set_stroke_color(ctx, hr_col);
+  graphics_fill_circle(ctx, GPoint(4, 4), 3);
+  graphics_fill_circle(ctx, GPoint(9, 4), 3);
+  GPoint pts[3] = {{1, 5}, {12, 5}, {6, 11}};
+  GPathInfo path_info = {.num_points = 3, .points = pts};
+  GPath *p = gpath_create(&path_info);
+  gpath_draw_filled(ctx, p);
+  gpath_destroy(p);
 }
 
 void health_handler(HealthEventType event, void *context) {
@@ -108,6 +140,16 @@ void health_handler(HealthEventType event, void *context) {
     s_sleep = health_service_sum_today(HealthMetricSleepSeconds);
     //s_deep_sleep = health_service_sum_today(HealthMetricSleepRestfulSeconds);
   }
+  #ifdef PBL_PLATFORM_EMERY
+  {
+    time_t now = time(NULL);
+    HealthServiceAccessibilityMask hr_mask =
+        health_service_metric_accessible(HealthMetricHeartRateBPM, now, now);
+    if (hr_mask & HealthServiceAccessibilityMaskAvailable) {
+      s_hr = health_service_peek_current_value(HealthMetricHeartRateBPM);
+    }
+  }
+  #endif
   health_update();
 
 }
@@ -124,9 +166,21 @@ void health_init() {
   layer_add_child(my_window_layer, health_layer);
 
   health_text_layer = text_layer_create_detailed(HEALTH_TEXT_LAYER, false,
-                                GColorClear, color_helper(colors[c_t2], global_settings.Invert),
-                                GTextAlignmentLeft, font_tiny);
+                                GColorClear, color_helper(colors[c_h1], global_settings.Invert),
+                                GTextAlignmentLeft, fonts_get_system_font(FONT_KEY_GOTHIC_24));
   layer_add_child(health_layer, text_layer_get_layer(health_text_layer));
+
+  // HR inline with date
+  hr_heart_layer = layer_create(GRect(52, 86, 14, 12));
+  layer_set_update_proc(hr_heart_layer, hr_heart_update_proc);
+  layer_add_child(my_window_layer, hr_heart_layer);
+  layer_set_hidden(hr_heart_layer, true);
+
+  hr_text_layer = text_layer_create_detailed(GRect(70, 74, 48, 28), false,
+                                GColorClear, color_helper(colors[c_h2], global_settings.Invert),
+                                GTextAlignmentLeft, fonts_get_system_font(FONT_KEY_GOTHIC_24));
+  text_layer_set_text(hr_text_layer, "");
+  layer_add_child(my_window_layer, text_layer_get_layer(hr_text_layer));
 
   foot_path_ptr = gpath_create(&FOOT_PATH_INFO);
   heel_path_ptr = gpath_create(&HEEL_PATH_INFO);
@@ -180,6 +234,15 @@ void health_deinit() {
   layer_destroy(health_zee_layer);
   text_layer_destroy(health_text_layer);
   layer_destroy(health_layer);
+
+  if (hr_text_layer) {
+    text_layer_destroy(hr_text_layer);
+    hr_text_layer = NULL;
+  }
+  if (hr_heart_layer) {
+    layer_destroy(hr_heart_layer);
+    hr_heart_layer = NULL;
+  }
 
   health_enabled = false;
 

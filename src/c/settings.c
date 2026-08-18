@@ -201,14 +201,14 @@ void settings_inbox(DictionaryIterator *iter, void *context) {
 }
 
 void settings_default_values() {
-  global_settings.Health = 0;
-  global_settings.Blink = 1;
+  global_settings.Health = 1;
+  global_settings.Blink = 0;  // separator blink off
   global_settings.Invert = 0;
   global_settings.BluetoothVibe = 1;
-  global_settings.HourlyVibe = 1;
+  global_settings.HourlyVibe = 0;  // hourly pulse off
   global_settings.BrandingMask = 0;
   global_settings.BatteryHide = 0;
-  global_settings.Seconds = 0;
+  global_settings.Seconds = 1;
   global_settings.PowerSave = 0;
   global_settings.PS_Start = 47;   //23:00
   global_settings.PS_End = 15;     //07:00
@@ -223,35 +223,39 @@ void settings_default_values() {
   global_settings.ColorBias = 0;
   global_settings.LeftHand = 0;
   colors[c_lc] = GColorWhite;
-  colors[c_bg1] = GColorWhite;
-  colors[c_bg2] = GColorBlack;
-  colors[c_bg3] = GColorWhite;
-  colors[c_bg4] = GColorBlack;
+  // Theme: 91 Dub v5 plus
+  colors[c_bg1] = GColorChromeYellow;      // outer border amber
+  colors[c_bg2] = GColorBlack;             // inner border
+  colors[c_bg3] = GColorWhite;             // inner panel
+  colors[c_bg4] = GColorBlack;             // background
 
-  colors[c_bi1] = GColorBlack;
-  colors[c_bi2] = GColorOrange;
-  colors[c_bi3] = GColorRed;
-  colors[c_bi4] = GColorRed;
+  colors[c_bi1] = GColorGreen;             // battery good
+  colors[c_bi2] = GColorOrange;            // battery warning
+  colors[c_bi3] = GColorDarkCandyAppleRed; // battery critical
+  colors[c_bi4] = GColorDukeBlue;          // battery charging
 
-  colors[c_bl1] = GColorDukeBlue;
-  colors[c_bl2] = GColorLightGray;
-  colors[c_bl3] = GColorRed;
-  colors[c_bl4] = GColorWhite;
+  colors[c_bl1] = GColorBlue;              // BT circle connected
+  colors[c_bl2] = GColorWhite;             // BT icon connected
+  colors[c_bl3] = GColorDarkCandyAppleRed; // BT circle disconnected
+  colors[c_bl4] = GColorWhite;             // BT icon disconnected
 
-  colors[c_d1]  = GColorWhite;
-  colors[c_d2]  = GColorWhite;
-  colors[c_d3]  = GColorWhite;
-  colors[c_d4]  = GColorBlack;
-  colors[c_d5]  = GColorWhite;
-  colors[c_d6]  = GColorWhite;
-  colors[c_d7]  = GColorWhite;
-  colors[c_d8]  = GColorWhite;
-  colors[c_d9]  = GColorWhite;
+  colors[c_d1]  = GColorChromeYellow;      // line top orange
+  colors[c_d2]  = GColorChromeYellow;      // line bottom orange
+  colors[c_d3]  = GColorChromeYellow;      // WR box border
+  colors[c_d4]  = GColorBlack;             // WR box fill black
+  colors[c_d5]  = GColorChromeYellow;      // WR letters orange
+  colors[c_d6]  = GColorChromeYellow;      // water resist text orange
+  colors[c_d7]  = GColorChromeYellow;      // button labels orange
+  colors[c_d8]  = GColorChromeYellow;      // button arrows orange
+  colors[c_d9]  = GColorWhite;             // branding
 
-  colors[c_t1]  = GColorBlack;
-  colors[c_t2]  = GColorBlack;
-  colors[c_t3]  = GColorWhite;
-  colors[c_t4]  = GColorBlack;
+  colors[c_t1]  = GColorBlack;             // date
+  colors[c_t2]  = GColorBlack;             // AM/PM
+  colors[c_t3]  = GColorWhite;             // time shadow
+  colors[c_t4]  = GColorBlack;             // time
+
+  colors[c_h1]  = GColorBlack;             // steps
+  colors[c_h2]  = GColorDarkCandyAppleRed; // heart rate
 
   memcpy(colorsSet1,colors,COLORS_NUM);
   memcpy(colorsSet2,colors,COLORS_NUM);

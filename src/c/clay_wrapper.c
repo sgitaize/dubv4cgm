@@ -66,6 +66,8 @@ static void clay_wrapper_inbox(DictionaryIterator *iter, void *context) {
     else if (key == MESSAGE_KEY_Set1_t2)  colorsSet1[c_t2] = GColorFromHEX(t->value->int32);
     else if (key == MESSAGE_KEY_Set1_t3)  colorsSet1[c_t3] = GColorFromHEX(t->value->int32);
     else if (key == MESSAGE_KEY_Set1_t4)  colorsSet1[c_t4] = GColorFromHEX(t->value->int32);
+    else if (key == MESSAGE_KEY_Set1_h1)  colorsSet1[c_h1] = GColorFromHEX(t->value->int32);
+    else if (key == MESSAGE_KEY_Set1_h2)  colorsSet1[c_h2] = GColorFromHEX(t->value->int32);
 
     // Set2 colors
     else if (key == MESSAGE_KEY_Set2_bg1)  colorsSet2[c_bg1] = GColorFromHEX(t->value->int32);
@@ -93,6 +95,8 @@ static void clay_wrapper_inbox(DictionaryIterator *iter, void *context) {
     else if (key == MESSAGE_KEY_Set2_t2)  colorsSet2[c_t2] = GColorFromHEX(t->value->int32);
     else if (key == MESSAGE_KEY_Set2_t3)  colorsSet2[c_t3] = GColorFromHEX(t->value->int32);
     else if (key == MESSAGE_KEY_Set2_t4)  colorsSet2[c_t4] = GColorFromHEX(t->value->int32);
+    else if (key == MESSAGE_KEY_Set2_h1)  colorsSet2[c_h1] = GColorFromHEX(t->value->int32);
+    else if (key == MESSAGE_KEY_Set2_h2)  colorsSet2[c_h2] = GColorFromHEX(t->value->int32);
 
     // Select settings (sent as cstring "0", "1", "2")
     else if (key == MESSAGE_KEY_Blink)     global_settings.Blink = parse_cstring_uint8(t->value->cstring);

@@ -29,6 +29,8 @@ bi4 Battery Charging
 
 void battery_settings_callback() {
   //APP_LOG(APP_LOG_LEVEL_DEBUG, "battery_settings_callback()");
+  layer_set_frame(text_layer_get_layer(battery_percent_layer), BATTERY_PERCENT);
+  layer_set_frame(battery_layer, BATTERY_LAYER);
   text_layer_set_text_color(battery_percent_layer, color_helper(colors[c_bi1], global_settings.Invert));
   layer_mark_dirty(text_layer_get_layer(battery_percent_layer));
   layer_mark_dirty(battery_layer);
@@ -90,7 +92,7 @@ void battery_init() {
 
   battery_percent_layer = text_layer_create_detailed(BATTERY_PERCENT, false,
                                 GColorClear, color_helper(colors[c_bi1], global_settings.Invert),
-                                GTextAlignmentRight, font_tiny);
+                                GTextAlignmentRight, fonts_get_system_font(FONT_KEY_GOTHIC_24));
   layer_add_child(my_window_layer, text_layer_get_layer(battery_percent_layer));
 
   bolt_path_ptr = gpath_create(&BOLT_PATH_INFO);
