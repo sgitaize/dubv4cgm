@@ -6,7 +6,7 @@
 #define COLORSET2_KEY 1342
 
 #define SETTINGS_CALLBACKS_COUNT 7
-#define COLORS_NUM 26
+#define COLORS_NUM 28
 
 typedef enum SettingsCallback {
   SETTINGS_CALLBACK_FONT = 0,
@@ -24,7 +24,9 @@ enum {
   c_bl1, c_bl2, c_bl3, c_bl4, //bluetooth
   c_d1, c_d2, c_d3, c_d4, c_d5, c_d6, c_d7, c_d8, c_d9, //decorations
   c_t1, c_t2, c_t3, c_t4, //time digits
-  c_lc //light color
+  c_lc, //light color
+  c_h1, //steps / health text + foot icon
+  c_h2  //heart rate icon + text
  };
 
 #define LOGOS_COUNT 2

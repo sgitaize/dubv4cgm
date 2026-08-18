@@ -14,6 +14,8 @@
 
 enum {t_sep, t_ampm};
 static TextLayer * t_layer[2] = {NULL};
+static TextLayer *date_text_layer = NULL;
+static char date_text_buf[20] = "";
 static Layer *center_layer;
 
 static AppTimer *blink_timer;
@@ -87,6 +89,12 @@ static void calculate_dynamic_positions() {
 
   cached_big_em = dh;
   cached_small_em = small_h;
+
+  // DS-Digital only: larger fctx em height
+  if (global_settings.FontFaceDigital == 0) {
+    cached_big_em = 82;
+    dh = 82;
+  }
 
 // Positioning uses measured layer widths directly — consistent, no clipping
   int16_t layer_dw = big_size.w > 0 ? big_size.w : 49;
@@ -326,22 +334,7 @@ static void fctx_update_proc(Layer *l, GContext *ctx) {
   #undef FCTX_X
   #undef FCTX_Y
 
-  fctx_set_text_em_height(&fctx, fctx_f, cached_small_em);
-  fctx_set_fill_color(&fctx, color_helper(colors[c_t1], global_settings.Invert));
-  fctx_begin_fill(&fctx);
-  FPoint dp;
-  int16_t date_ch = cached_date_char_height > 0 ? cached_date_char_height : 18;
-  int16_t panel_bottom_fctx = BACKGROUND_PANEL.origin.y + BACKGROUND_PANEL.size.h - TIMEDIGITS_CENTER.origin.y;
-  int16_t date_x = TIMEDIGITS_DATE.origin.x + 1;
-  int16_t date_y = panel_bottom_fctx + font_layout(global_settings.FontFaceDigital)->date_bottom_dy - date_ch;
-  int16_t date_w = TIMEDIGITS_DATE.size.w;
-  int16_t date_h = date_ch;
-  dp.x = INT_TO_FIXED(date_x + center_origin.x + date_w);
-  dp.y = INT_TO_FIXED(date_y + center_origin.y + date_h / 2);
-  fctx_set_offset(&fctx, dp);
-  fctx_draw_string(&fctx, fctx_date_text, fctx_f, GTextAlignmentRight, FTextAnchorMiddle);
-
-  fctx_end_fill(&fctx);
+  // Date is drawn by date_text_layer (font_tiny, mixed case) — not fctx
   fctx_deinit_context(&fctx);
 }
 
@@ -353,6 +346,7 @@ void timedigits_settings_callback() {
   if (cached_date_char_height <= 0) cached_date_char_height = 18;
 
   text_layer_set_text_color(t_layer[t_ampm], color_helper(colors[c_t2], global_settings.Invert));
+  if (date_text_layer) text_layer_set_text_color(date_text_layer, color_helper(colors[c_t1], global_settings.Invert));
 
   tick_timer_service_unsubscribe();
   if (blink_timer) {
@@ -505,20 +499,18 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
              "%b",
              tick_time);
 
-    /* snprintf(full_date_text,
-      sizeof(full_date_text),
-      "%s %s %s",
-      upcase(date_day),
-      date_monthday,
-      upcase(date_month)); */
-
-    snprintf(full_date_text,
-      sizeof(full_date_text),
-      "%s %s",
-      upcase(date_day),
-      date_monthday);
-
+    // Mixed case: "Sun Aug 16"
+    snprintf(full_date_text, sizeof(full_date_text), "%s %s %s",
+             date_day, date_month, date_monthday);
+    // Trim leading zero on day if present
+    // strftime %d gives 01-31; leave as-is for consistency or strip:
+    if (date_monthday[0] == '0') {
+      snprintf(full_date_text, sizeof(full_date_text), "%s %s %s",
+               date_day, date_month, date_monthday + 1);
+    }
+    snprintf(date_text_buf, sizeof(date_text_buf), "%s", full_date_text);
     snprintf(fctx_date_text, sizeof(fctx_date_text), "%s", full_date_text);
+    if (date_text_layer) text_layer_set_text(date_text_layer, date_text_buf);
     layer_mark_dirty(fctx_clock_layer);
   }
 
@@ -550,11 +542,18 @@ void timedigits_init() {
   //Indicator - AM/PM/24H
   t_layer[t_ampm] = text_layer_create_detailed(TIMEDIGITS_AMPM, false,
                                   GColorClear, color_helper(colors[c_t2], global_settings.Invert),
-                                  GTextAlignmentLeft, font_tiny);
+                                  GTextAlignmentLeft, fonts_get_system_font(FONT_KEY_GOTHIC_24));
   if (clock_is_24h_style()) {
     text_layer_set_text(t_layer[t_ampm], "24H");
   }
   layer_add_child(center_layer, text_layer_get_layer(t_layer[t_ampm]));
+
+  // Date: up a touch, taller for descenders (g), inset from right edge
+  date_text_layer = text_layer_create_detailed(GRect(44, 54, 138, 30), false,
+                                  GColorClear, color_helper(colors[c_t1], global_settings.Invert),
+                                  GTextAlignmentRight, fonts_get_system_font(FONT_KEY_GOTHIC_24));
+  text_layer_set_text(date_text_layer, date_text_buf);
+  layer_add_child(center_layer, text_layer_get_layer(date_text_layer));
 
   calculate_dynamic_positions();
   cached_date_char_height = graphics_text_layout_get_content_size("MON 31", font_small, GRect(0, 0, 186, 40), GTextOverflowModeFill, GTextAlignmentRight).h;
@@ -596,6 +595,10 @@ void timedigits_deinit() {
       text_layer_destroy(t_layer[i]);
       t_layer[i] = NULL;
     }
+  }
+  if (date_text_layer) {
+    text_layer_destroy(date_text_layer);
+    date_text_layer = NULL;
   }
 
   layer_destroy(center_layer);
