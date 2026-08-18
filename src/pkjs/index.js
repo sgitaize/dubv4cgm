@@ -103,7 +103,15 @@ Pebble.addEventListener('appmessage', function(e) {
 });
 
 Pebble.addEventListener('showConfiguration', function() {
-  Pebble.openURL(clay.generateUrl());
+  // Pass saved settings so Clay does not reset to defaults every open
+  var settings = {};
+  try {
+    var saved = localStorage.getItem(SETTINGS_STORAGE_KEY);
+    if (saved) settings = JSON.parse(saved);
+  } catch (e) {
+    console.log('could not load saved settings for config UI: ' + e);
+  }
+  Pebble.openURL(clay.generateUrl(settings));
 });
 
 Pebble.addEventListener('webviewclosed', function(e) {

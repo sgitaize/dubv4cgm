@@ -8,7 +8,8 @@ module.exports = function(minified) {
     'bi1', 'bi2', 'bi3', 'bi4',
     'bl1', 'bl2', 'bl3', 'bl4',
     'd1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8', 'd9',
-    't1', 't2', 't3', 't4'
+    't1', 't2', 't3', 't4',
+    'h1', 'h2'
   ];
 
   var sunlightColorMap = {
@@ -127,12 +128,10 @@ module.exports = function(minified) {
 
   clayConfig.on(clayConfig.EVENTS.AFTER_BUILD, function() {
     var themeSelect = clayConfig.getItemById('Theme');
-    var currentTheme = themeSelect.get();
-    if (currentTheme) applyTheme(currentTheme);
     var colorSetRadio = clayConfig.getItemById('ColorSet');
     var themeExport = clayConfig.getItemById('ThemeExport');
+    // Only apply theme when the user picks one — not on every settings open
     themeSelect.on('change', function() { applyTheme(this.get()); });
-    colorSetRadio.on('change', function() { themeSelect.set(themeSelect.config.defaultValue); });
     for (var i = 0; i < colorKeys.length; i++) {
       var key = colorKeys[i];
       var picker1 = clayConfig.getItemByMessageKey('Set1_' + key);

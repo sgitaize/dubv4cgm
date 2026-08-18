@@ -8,12 +8,14 @@
   }
 
   var defaults1 = {
-    bg: ['0xFFFFFF', '0x000000', '0xFFFFFF', '0x000000'],
-    bi: ['0x000000', '0xFFA500', '0xFF0000', '0xFF0000'],
-    bl: ['0x00009C', '0xD3D3D3', '0xFF0000', '0xFFFFFF'],
-    d:  ['0xFFFFFF', '0xFFFFFF', '0xFFFFFF', '0x000000',
-        '0xFFFFFF', '0xFFFFFF', '0xFFFFFF', '0xFFFFFF', '0xFFFFFF'],
-    t:  ['0x000000', '0x000000', '0xFFFFFF', '0x000000']
+    // 91 Dub v5 plus theme
+    bg: ['0xFFAA00', '0x000000', '0xFFFFFF', '0x000000'],
+    bi: ['0x00AA00', '0xFFAA00', '0xAA0000', '0x00009C'],
+    bl: ['0x0000FF', '0xFFFFFF', '0xAA0000', '0xFFFFFF'],
+    d:  ['0xFFAA00', '0xFFAA00', '0xFFAA00', '0x000000',
+        '0xFFAA00', '0xFFAA00', '0xFFAA00', '0xFFAA00', '0xFFFFFF'],
+    t:  ['0x000000', '0x000000', '0xFFFFFF', '0x000000'],
+    h:  ['0x000000', '0xAA0000']
   };
 
   var labels1 = {
@@ -22,7 +24,8 @@
     bl: ['Circle Connected', 'Icon Connected', 'Circle Disconnected', 'Icon Disconnected'],
     d:  ['Line Top', 'Line Bottom', 'Box Border', 'Box Fill',
           'WR Letters', 'Water Resist Text', 'Button Labels', 'Button Arrows', 'Branding Text'],
-    t:  ['Date', 'AM/PM/24H', 'Time Shadow', 'Time']
+    t:  ['Date', 'AM/PM/24H', 'Time Shadow', 'Time'],
+    h:  ['Steps', 'Heart Rate']
   };
 
   var shortNames = {
@@ -30,7 +33,8 @@
     bi: ['bi1', 'bi2', 'bi3', 'bi4'],
     bl: ['bl1', 'bl2', 'bl3', 'bl4'],
     d:  ['d1', 'd2', 'd3', 'd4', 'd5', 'd6', 'd7', 'd8', 'd9'],
-    t:  ['t1', 't2', 't3', 't4']
+    t:  ['t1', 't2', 't3', 't4'],
+    h:  ['h1', 'h2']
   };
 
   function colorPicker(prefix, short, label, defaultVal) {
@@ -59,6 +63,10 @@
     items.push(colorPicker(prefix, shorts.t[1], lbls.t[1], defs.t[1]));
     items.push(colorPicker(prefix, shorts.t[3], lbls.t[3], defs.t[3]));
     items.push(colorPicker(prefix, shorts.t[2], lbls.t[2], defs.t[2]));
+
+    items.push({ type: 'heading', defaultValue: 'Health', size: 4 });
+    items.push(colorPicker(prefix, shorts.h[0], lbls.h[0], defs.h[0]));
+    items.push(colorPicker(prefix, shorts.h[1], lbls.h[1], defs.h[1]));
 
     items.push({ type: 'heading', defaultValue: 'Lines', size: 4 });
     items.push(colorPicker(prefix, shorts.d[0], lbls.d[0], defs.d[0]));
@@ -103,13 +111,13 @@
           type: 'toggle',
           messageKey: 'Health',
           label: 'Show Health Data',
-          defaultValue: false
+          defaultValue: true
         },
         {
           type: 'toggle',
           messageKey: 'Seconds',
           label: 'Show Seconds',
-          defaultValue: false
+          defaultValue: true
         },
         {
           type: 'select',
@@ -126,7 +134,7 @@
           type: 'select',
           messageKey: 'Blink',
           label: 'Separator Blink',
-          defaultValue: 1,
+          defaultValue: '0',
           options: [
             { label: 'Off', value: '0' },
             { label: 'Normal', value: '1' },
@@ -186,7 +194,7 @@
           type: 'toggle',
           messageKey: 'HourlyVibe',
           label: 'Hourly Vibe Pulse',
-          defaultValue: true
+          defaultValue: false
         }
       ]
     },
