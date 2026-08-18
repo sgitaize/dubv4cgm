@@ -1,7 +1,7 @@
 {
-  "name": "91-dub-v5",
-  "author": "lightrush",
-  "version": "5.5.4",
+  "name": "91-dub-v5-plus",
+  "author": "dflo",
+  "version": "6.0.19",
   "keywords": [
     "pebble-app"
   ],
@@ -14,8 +14,8 @@
     "pebble-fctx": "^1.6.5"
   },
   "pebble": {
-    "displayName": "91 Dub v5",
-    "uuid": "97b06619-9dff-43ba-8f58-cf57bcbc2a75",
+    "displayName": "91 Dub v5 plus",
+    "uuid": "e4b21fef-5fb7-4864-bfcb-0dc1693ec1c8",
     "sdkVersion": "3",
     "enableMultiJS": true,
     "targetPlatforms": [
@@ -101,6 +101,10 @@
       "Set2_lightColorEnabled",
       "Set1_lightColor",
       "Set2_lightColor",
+      "Set1_h1",
+      "Set1_h2",
+      "Set2_h1",
+      "Set2_h2",
       "FontFaceDigital",
       "UseAntialiasing",
       "ColorBias"
