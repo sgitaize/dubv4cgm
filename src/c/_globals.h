@@ -28,7 +28,7 @@ typedef enum {UP, DOWN, LEFT, RIGHT} direction_t;
 
 // BATTERY — terminal position DERIVED from scaled icon dimensions
 #define BATTERY_LAYER GRect(162, 58, 23, 12)
-#define BATTERY_PERCENT GRect(120, 47, 40, 28)
+#define BATTERY_PERCENT GRect(100, 47, 60, 28)
 #define BATTERY_ICON GRect(0, 0, 22, 12)
 // terminal: 1px line at right edge, height matches fill, vertically centered
 #define BATTERY_ICON_TERMINAL GRect(22, 2, 1, 8)
