@@ -237,6 +237,7 @@ void settings_default_values() {
   global_settings.VibeLow = 0;
   global_settings.VibeHigh = 0;
   global_settings.CgmBacklight = 0;
+  global_settings.Language = 0;
   colors[c_lc] = GColorWhite;
   // Theme: 91 Dub v5 plus
   colors[c_bg1] = GColorChromeYellow;      // outer border amber

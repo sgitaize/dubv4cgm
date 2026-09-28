@@ -73,9 +73,12 @@ typedef struct Settings {
   uint8_t VibeLow;
   uint8_t VibeHigh;
   uint8_t CgmBacklight;  // 1=backlight in the high/low colour while out of range
+  uint8_t Language;      // 0=English, 1=German (watch texts)
 } __attribute__((__packed__)) Settings;
 
 extern Settings global_settings;
+#define LANG_DE (global_settings.Language == 1)
+#define TR(en, de) (LANG_DE ? (de) : (en))
 extern GColor colors[COLORS_NUM];
 extern GColor colorsSet1[COLORS_NUM];
 extern GColor colorsSet2[COLORS_NUM];

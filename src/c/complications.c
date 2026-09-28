@@ -56,9 +56,9 @@ static bool cgm_is_stale(void) {
 static const char *cgm_status_text(void) {
   switch (s_status) {
     case -1:                 return "CGM ...";
-    case CGM_STATUS_NO_CONN: return "NO CONN";
-    case 4:                  return "SET URL";   // pkjs: no Nightscout URL
-    default:                 return "NO BG";
+    case CGM_STATUS_NO_CONN: return TR("NO CONN", "KEINE VERB");
+    case 4:                  return TR("SET URL", "URL FEHLT");   // pkjs: no Nightscout URL
+    default:                 return TR("NO BG", "KEIN WERT");
   }
 }
 
@@ -161,16 +161,16 @@ static void cgm_layer_update(Layer *layer, GContext *ctx) {
 
 // ── Edge labels ───────────────────────────────────────────────────────────
 static const char *weather_text(int code) {
-  if (code == 0)  return "CLEAR";
-  if (code <= 2)  return "FAIR";
-  if (code == 3)  return "CLOUDY";
-  if (code <= 48) return "FOG";
-  if (code <= 57) return "DRIZZLE";
-  if (code <= 67) return "RAIN";
-  if (code <= 77) return "SNOW";
-  if (code <= 82) return "SHOWERS";
-  if (code <= 86) return "SNOW";
-  return "STORM";
+  if (code == 0)  return TR("CLEAR", "KLAR");
+  if (code <= 2)  return TR("FAIR", "HEITER");
+  if (code == 3)  return TR("CLOUDY", "BEWÖLKT");
+  if (code <= 48) return TR("FOG", "NEBEL");
+  if (code <= 57) return TR("DRIZZLE", "NIESEL");
+  if (code <= 67) return TR("RAIN", "REGEN");
+  if (code <= 77) return TR("SNOW", "SCHNEE");
+  if (code <= 82) return TR("SHOWERS", "SCHAUER");
+  if (code <= 86) return TR("SNOW", "SCHNEE");
+  return TR("STORM", "GEWITTER");
 }
 
 static void slot_text(uint8_t type, uint8_t idx, char *buf, size_t len) {
@@ -182,13 +182,13 @@ static void slot_text(uint8_t type, uint8_t idx, char *buf, size_t len) {
       break;
     case SLOT_CGM:
       if (!cgm_has_value())   snprintf(buf, len, "%s", cgm_status_text());
-      else if (cgm_is_stale()) snprintf(buf, len, "%s OLD", s_value);
+      else if (cgm_is_stale()) snprintf(buf, len, TR("%s OLD", "%s ALT"), s_value);
       else                     snprintf(buf, len, "%s %s", s_value, s_delta);
       break;
     case SLOT_CGM_AGE: {
       int age = cgm_age_min();
       if (age < 0) snprintf(buf, len, "CGM --");
-      else         snprintf(buf, len, "%d MIN AGO", age);
+      else         snprintf(buf, len, TR("%d MIN AGO", "VOR %d MIN"), age);
       break;
     }
     case SLOT_WEATHER:
@@ -198,15 +198,15 @@ static void slot_text(uint8_t type, uint8_t idx, char *buf, size_t len) {
     case SLOT_STEPS: {
       char n[12];
       format_commas(s_steps, n);
-      snprintf(buf, len, "%s STEPS", n);
+      snprintf(buf, len, TR("%s STEPS", "%s SCHRITTE"), n);
       break;
     }
     case SLOT_HR:
-      if (s_hr > 0) snprintf(buf, len, "%d BPM", s_hr);
-      else          snprintf(buf, len, "-- BPM");
+      if (s_hr > 0) snprintf(buf, len, TR("%d BPM", "PULS %d"), s_hr);
+      else          snprintf(buf, len, "%s", TR("-- BPM", "PULS --"));
       break;
     case SLOT_BATTERY:
-      snprintf(buf, len, "BAT %d%%", battery_state_service_peek().charge_percent);
+      snprintf(buf, len, TR("BAT %d%%", "AKKU %d%%"), battery_state_service_peek().charge_percent);
       break;
     default:
       break;

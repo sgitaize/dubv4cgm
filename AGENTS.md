@@ -19,7 +19,9 @@ the upstream architecture and still valid.
   messages (CGM/weather, no `SlotMain`) return early → no settings save/reload.
   Every settings message contains `SlotMain`.
 - `src/c/settings.h` – new fields appended to the packed `Settings` struct
-  (persist compatibility): Slot*, Cgm*, Vibe*, CgmBacklight.
+  (persist compatibility): Slot*, Cgm*, Vibe*, CgmBacklight, Language.
+  `TR("EN", "DE")` / `LANG_DE` pick the watch text by `Language` (0 = en, 1 = de);
+  German date is built by hand in `timedigits.c` (strftime is English only).
 - `src/pkjs/index.js` – no Clay. Settings JSON from the page is stored in
   `localStorage['dubv4cgm_settings']` and sent by message-key name (colours as
   int, toggles 1/0, selects as strings like Clay). Phone-only: `NsUrl`,
@@ -31,12 +33,15 @@ the upstream architecture and still valid.
   every 30 min (`WeatherTemp`, `WeatherCode` = WMO code).
 - `docs/config/` – GitHub Pages settings page: `index.html` (small renderer for
   Clay-style items: section, heading, text, toggle, select, input, color,
-  radiogroup, preview, button, themeexport), `schema.js` (upstream Clay config
-  + CGM / complication sections), `preview.js` (upstream preview component),
-  `themes.json`. Settings come in as `#config=<json>`, go back via
+  radiogroup, preview, button, themeexport, themepicker; `collapsed: true` on a
+  section = `<details>`), `schema.js` (order: quick setup incl. `Language` and
+  preset picker, Nightscout, complications; the rest collapsed), `preview.js`
+  (upstream preview component), `themes.json`, `i18n.js` (German texts keyed
+  by the English text; missing keys stay English; language switch re-renders
+  the page keeping all values). Settings come in as `#config=<json>`, go back via
   `return_to` + JSON.
-- Font `FONT_LUCIDIA_14` (labels) charset includes `+` and `°`; keep label
-  texts within that set (upper case, digits, `%.:,+-/'°`).
+- Font `FONT_LUCIDIA_14` (labels, date) charset includes `+`, `°` and
+  `ÄÖÜäöüß`; keep label texts within that set (letters, digits, `%.:,+-/'°`).
 
 ---
 

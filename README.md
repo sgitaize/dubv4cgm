@@ -25,10 +25,13 @@ based on the great [91 Dub v4.0](https://github.com/orviwan/91-dub-4.0) by Orviw
 - **Four edge labels** (LIGHT / PREV / NEXT / bottom left) can show:
   original label, CGM value, CGM age, weather, steps, heart rate, battery
 - **Weather** from [Open-Meteo](https://open-meteo.com) (no API key), °C / °F
+- **English / Deutsch** for all watch texts and the settings page
 - Everything from 91 Dub v5 plus: steps / sleep, heart rate, 3 digital fonts,
   anti-aliasing, 2 colour sets (switch by time or tap), 90+ themes,
   custom backlight colour, power save, left-handed mode …
-- Settings page on GitHub Pages: https://sgitaize.github.io/dubv4cgm/config/
+- Settings page on GitHub Pages: https://sgitaize.github.io/dubv4cgm/config/ –
+  quick setup (language, colour preset, Nightscout, complications) on top,
+  everything else collapsible
   (settings travel in the URL fragment – your Nightscout token never reaches a server)
 
 ## Nightscout

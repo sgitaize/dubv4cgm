@@ -148,6 +148,7 @@ static void clay_wrapper_inbox(DictionaryIterator *iter, void *context) {
     else if (key == MESSAGE_KEY_VibeLow)     global_settings.VibeLow = (uint8_t)t->value->int32;
     else if (key == MESSAGE_KEY_CgmBacklight) global_settings.CgmBacklight = (uint8_t)t->value->int32;
     else if (key == MESSAGE_KEY_VibeHigh)    global_settings.VibeHigh = (uint8_t)t->value->int32;
+    else if (key == MESSAGE_KEY_Language)    global_settings.Language = parse_cstring_uint8(t->value->cstring);
 
     t = dict_read_next(iter);
   }

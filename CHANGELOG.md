@@ -1,5 +1,10 @@
 # Changelog
 
+## dubv4cgm v1.1.0 (2026-09-28)
+
+- Language setting English / Deutsch: weather, date, status/complication texts and the settings page itself (button labels stay English) (default: phone language)
+- Settings page reorganised: quick setup on top (language, colour preset with preview and ◀ ▶ / random, Nightscout, complications), everything else in collapsible sections
+
 ## dubv4cgm v1.0.0 (2026-09-28)
 
 - Fork of 91 Dub v5 plus 6.0.20 as "91 Dub CGM" (new UUID)

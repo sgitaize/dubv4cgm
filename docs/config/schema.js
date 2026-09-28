@@ -113,7 +113,27 @@
             { label: 'Battery', value: '7' }
           ];
 
-  var cgmSections = [
+  var timeSel = timeOptions.map(function(t) { return { label: t, value: t }; });
+
+  // Order: quick setup first (preset, Nightscout, complications), everything
+  // else in collapsed sections. Same message keys and values as before.
+  var config = [
+    { type: 'heading', defaultValue: '91 Dub CGM' },
+    {
+      type: 'section',
+      items: [
+        { type: 'heading', defaultValue: 'Quick setup' },
+        { type: 'select', messageKey: 'Language', label: 'Language', defaultValue: '0',
+          options: [ { label: 'English', value: '0' }, { label: 'Deutsch', value: '1' } ],
+          description: 'Watch texts (weather, date, status) and this page. Button labels stay as printed.' },
+        { type: 'preview', id: 'PreviewTheme', defaultValue: '' },
+        { type: 'themepicker', id: 'Theme', label: 'Colour preset', defaultValue: '',
+          options: [ { label: 'Select a Theme', value: '' } ]
+            .concat(themes.map(function(t) { return { label: t.theme[0].name, value: t.theme[0].name }; })) },
+        { type: 'radiogroup', id: 'ColorSet', label: 'Apply to Color Set', defaultValue: '1',
+          options: [ { label: 'Set 1', value: '1' }, { label: 'Set 2', value: '2' } ] }
+      ]
+    },
     {
       type: 'section',
       items: [
@@ -124,18 +144,8 @@
           attributes: { placeholder: 'readable-1234abcd', autocapitalize: 'off', autocorrect: 'off' } },
         { type: 'select', messageKey: 'CgmUnits', label: 'Units', defaultValue: '0',
           options: [ { label: 'mg/dL', value: '0' }, { label: 'mmol/L', value: '1' } ] },
-        { type: 'select', messageKey: 'CgmInterval', label: 'Sensor interval', defaultValue: '5',
-          options: [ { label: '5 minutes (Dexcom, Libre via xDrip …)', value: '5' }, { label: '1 minute (Libre 3 …)', value: '1' } ],
-          description: 'Values older than 2x the interval are shown struck through.' },
         { type: 'input', messageKey: 'CgmHigh', label: 'High above', defaultValue: '180', attributes: { type: 'number', step: 'any' } },
-        { type: 'input', messageKey: 'CgmLow', label: 'Low below', defaultValue: '70', attributes: { type: 'number', step: 'any' } },
-        { type: 'toggle', messageKey: 'CgmColorize', label: 'Colour high / low values', defaultValue: true },
-        { type: 'color', messageKey: 'CgmColorHigh', label: 'High colour', defaultValue: '0xFF5500', sunlight: true },
-        { type: 'color', messageKey: 'CgmColorLow', label: 'Low colour', defaultValue: '0xFF0000', sunlight: true },
-        { type: 'toggle', messageKey: 'CgmBacklight', label: 'Backlight in high / low colour', defaultValue: false,
-          description: 'Pebble Time 2: while the value is out of range the backlight lights up in the high or low colour.' },
-        { type: 'toggle', messageKey: 'VibeLow', label: 'Vibrate on low (every 10 min)', defaultValue: false },
-        { type: 'toggle', messageKey: 'VibeHigh', label: 'Vibrate on high (every 10 min)', defaultValue: false }
+        { type: 'input', messageKey: 'CgmLow', label: 'Low below', defaultValue: '70', attributes: { type: 'number', step: 'any' } }
       ]
     },
     {
@@ -152,298 +162,108 @@
           options: [ { label: '°C', value: '0' }, { label: '°F', value: '1' } ] },
         { type: 'text', defaultValue: 'Left-handed mode swaps the corners. Keep the two labels of a row short enough to fit next to each other. Weather: Open-Meteo, needs location access for the Pebble app.' }
       ]
-    }
-  ];
-
-  var config = [
-    { type: 'heading', defaultValue: '91 Dub CGM' },
-  ].concat(cgmSections).concat([
-
+    },
     {
-      type: 'section',
+      type: 'section', collapsed: true,
+      items: [
+        { type: 'heading', defaultValue: 'CGM: colours & alarms' },
+        { type: 'select', messageKey: 'CgmInterval', label: 'Sensor interval', defaultValue: '5',
+          options: [ { label: '5 minutes (Dexcom, Libre via xDrip …)', value: '5' }, { label: '1 minute (Libre 3 …)', value: '1' } ],
+          description: 'Values older than 2x the interval are shown struck through.' },
+        { type: 'toggle', messageKey: 'CgmColorize', label: 'Colour high / low values', defaultValue: true },
+        { type: 'color', messageKey: 'CgmColorHigh', label: 'High colour', defaultValue: '0xFF5500', sunlight: true },
+        { type: 'color', messageKey: 'CgmColorLow', label: 'Low colour', defaultValue: '0xFF0000', sunlight: true },
+        { type: 'toggle', messageKey: 'CgmBacklight', label: 'Backlight in high / low colour', defaultValue: false,
+          description: 'Pebble Time 2: while the value is out of range the backlight lights up in the high or low colour.' },
+        { type: 'toggle', messageKey: 'VibeLow', label: 'Vibrate on low (every 10 min)', defaultValue: false },
+        { type: 'toggle', messageKey: 'VibeHigh', label: 'Vibrate on high (every 10 min)', defaultValue: false }
+      ]
+    },
+    {
+      type: 'section', collapsed: true,
       items: [
         { type: 'heading', defaultValue: 'Display' },
-        {
-          type: 'toggle',
-          messageKey: 'Health',
-          label: 'Show Health Data',
-          defaultValue: true
-        },
-        {
-          type: 'toggle',
-          messageKey: 'Seconds',
-          label: 'Show Seconds',
-          defaultValue: true
-        },
-        {
-          type: 'select',
-          messageKey: 'FontFaceDigital',
-          label: 'Digital Font',
-          defaultValue: '0',
-          options: [
-            { label: 'DS-Digital', value: '0' },
-            { label: 'DSEG-Classic-Mini', value: '1' },
-            { label: 'DSEG-Classic-Bold', value: '2' }
-          ]
-        },
-        {
-          type: 'select',
-          messageKey: 'Blink',
-          label: 'Separator Blink',
-          defaultValue: '0',
-          options: [
-            { label: 'Off', value: '0' },
-            { label: 'Normal', value: '1' },
-            { label: 'Double Rate', value: '2' }
-          ]
-        },
-        {
-          type: 'toggle',
-          messageKey: 'Invert',
-          label: 'Invert Colors',
-          defaultValue: false
-        },
-        {
-          type: 'toggle',
-          messageKey: 'LeftHand',
-          label: 'Left Handed',
-          defaultValue: false
-        }
+        { type: 'toggle', messageKey: 'Health', label: 'Show Health Data', defaultValue: true },
+        { type: 'toggle', messageKey: 'Seconds', label: 'Show Seconds', defaultValue: true },
+        { type: 'select', messageKey: 'FontFaceDigital', label: 'Digital Font', defaultValue: '0',
+          options: [ { label: 'DS-Digital', value: '0' }, { label: 'DSEG-Classic-Mini', value: '1' }, { label: 'DSEG-Classic-Bold', value: '2' } ] },
+        { type: 'select', messageKey: 'Blink', label: 'Separator Blink', defaultValue: '0',
+          options: [ { label: 'Off', value: '0' }, { label: 'Normal', value: '1' }, { label: 'Double Rate', value: '2' } ] },
+        { type: 'toggle', messageKey: 'Invert', label: 'Invert Colors', defaultValue: false },
+        { type: 'toggle', messageKey: 'LeftHand', label: 'Left Handed', defaultValue: false },
+        { type: 'heading', defaultValue: 'Anti-aliasing', size: 4 },
+        { type: 'toggle', messageKey: 'UseAntialiasing', label: 'Use Anti-aliasing', defaultValue: false },
+        { type: 'select', messageKey: 'ColorBias', label: 'Intensity', defaultValue: '0',
+          options: [ { label: '-1', value: '-1' }, { label: '0', value: '0' }, { label: '+1', value: '1' } ] },
+        { type: 'heading', defaultValue: 'Appearance', size: 4 },
+        { type: 'select', messageKey: 'Logo', label: 'Branding Logo', defaultValue: '1',
+          options: [ { label: 'Pebble old', value: '0' }, { label: 'Pebble new', value: '1' } ] },
+        { type: 'toggle', messageKey: 'BrandingMask', label: 'Hide Branding', defaultValue: false },
+        { type: 'toggle', messageKey: 'BatteryHide', label: 'Hide Battery', defaultValue: false }
       ]
     },
-
     {
-      type: 'section',
-      items: [
-        { type: 'heading', defaultValue: 'Anti-aliasing' },
-        {
-          type: 'toggle',
-          messageKey: 'UseAntialiasing',
-          label: 'Use Anti-aliasing',
-          defaultValue: false
-        },
-        {
-          type: 'select',
-          messageKey: 'ColorBias',
-          label: 'Intensity',
-          defaultValue: '0',
-          options: [
-            { label: '-1', value: '-1' },
-            { label: '0', value: '0' },
-            { label: '+1', value: '1' }
-          ]
-        }
-      ]
-    },
-
-    {
-      type: 'section',
+      type: 'section', collapsed: true,
       items: [
         { type: 'heading', defaultValue: 'Notifications' },
-        {
-          type: 'toggle',
-          messageKey: 'BluetoothVibe',
-          label: 'Bluetooth Disconnect Vibe',
-          defaultValue: true
-        },
-        {
-          type: 'toggle',
-          messageKey: 'HourlyVibe',
-          label: 'Hourly Vibe Pulse',
-          defaultValue: false
-        }
+        { type: 'toggle', messageKey: 'BluetoothVibe', label: 'Bluetooth Disconnect Vibe', defaultValue: true },
+        { type: 'toggle', messageKey: 'HourlyVibe', label: 'Hourly Vibe Pulse', defaultValue: false }
       ]
     },
-
     {
-      type: 'section',
-      items: [
-        { type: 'heading', defaultValue: 'Appearance' },
-        {
-          type: 'select',
-          messageKey: 'Logo',
-          label: 'Branding Logo',
-          defaultValue: '1',
-          options: [
-            { label: 'Pebble old', value: '0' },
-            { label: 'Pebble new', value: '1' }
-          ]
-        },
-        {
-          type: 'toggle',
-          messageKey: 'BrandingMask',
-          label: 'Hide Branding',
-          defaultValue: false
-        },
-        {
-          type: 'toggle',
-          messageKey: 'BatteryHide',
-          label: 'Hide Battery',
-          defaultValue: false
-        }
-      ]
-    },
-
-    {
-      type: 'section',
+      type: 'section', collapsed: true,
       items: [
         { type: 'heading', defaultValue: 'Power Save' },
-        {
-          type: 'toggle',
-          messageKey: 'PowerSave',
-          label: 'Enable Power Save',
-          defaultValue: false
-        },
-        {
-          type: 'select',
-          messageKey: 'PS_Start',
-          label: 'Power Save Start',
-          defaultValue: '23:00',
-          options: timeOptions.map(function(t) { return {label: t, value: t}; })
-        },
-        {
-          type: 'select',
-          messageKey: 'PS_End',
-          label: 'Power Save End',
-          defaultValue: '07:00',
-          options: timeOptions.map(function(t) { return {label: t, value: t}; })
-        }
+        { type: 'toggle', messageKey: 'PowerSave', label: 'Enable Power Save', defaultValue: false },
+        { type: 'select', messageKey: 'PS_Start', label: 'Power Save Start', defaultValue: '23:00', options: timeSel },
+        { type: 'select', messageKey: 'PS_End', label: 'Power Save End', defaultValue: '07:00', options: timeSel }
       ]
     },
-
     {
-      type: 'section',
+      type: 'section', collapsed: true,
       items: [
         { type: 'heading', defaultValue: 'Color Set Switching' },
-        {
-          type: 'select',
-          messageKey: 'SwitchSet',
-          label: 'Switch Mode',
-          defaultValue: '0',
-          options: [
-            { label: 'Inactive', value: '0' },
-            { label: 'By Time', value: '1' },
-            { label: 'By Tap', value: '2' }
-          ]
-        },
-        {
-          type: 'select',
-          messageKey: 'SwitchStart',
-          label: 'Switch To Set 2 At',
-          defaultValue: '23:00',
-          options: timeOptions.map(function(t) { return {label: t, value: t}; })
-        },
-        {
-          type: 'select',
-          messageKey: 'SwitchEnd',
-          label: 'Switch To Set 1 At',
-          defaultValue: '07:00',
-          options: timeOptions.map(function(t) { return {label: t, value: t}; })
-        }
+        { type: 'select', messageKey: 'SwitchSet', label: 'Switch Mode', defaultValue: '0',
+          options: [ { label: 'Inactive', value: '0' }, { label: 'By Time', value: '1' }, { label: 'By Tap', value: '2' } ] },
+        { type: 'select', messageKey: 'SwitchStart', label: 'Switch To Set 2 At', defaultValue: '23:00', options: timeSel },
+        { type: 'select', messageKey: 'SwitchEnd', label: 'Switch To Set 1 At', defaultValue: '07:00', options: timeSel }
       ]
     },
-
     {
-      type: 'section',
+      type: 'section', collapsed: true,
       items: [
         { type: 'heading', defaultValue: 'Backlight Color' },
-        {
-          type: 'toggle',
-          messageKey: 'Set1_lightColorEnabled',
-          label: 'Set 1 Custom Backlight',
-          defaultValue: false
-        },
-        {
-          type: 'color',
-          messageKey: 'Set1_lightColor',
-          label: 'Set 1 Backlight Color',
-          allowGray: false,
-          sunlight: true,
-          defaultValue: '0xFFFFFF'
-        },
-        {
-          type: 'toggle',
-          messageKey: 'Set2_lightColorEnabled',
-          label: 'Set 2 Custom Backlight',
-          defaultValue: false
-        },
-        {
-          type: 'color',
-          messageKey: 'Set2_lightColor',
-          label: 'Set 2 Backlight Color',
-          allowGray: false,
-          sunlight: true,
-          defaultValue: '0xFFFFFF'
-        }
+        { type: 'toggle', messageKey: 'Set1_lightColorEnabled', label: 'Set 1 Custom Backlight', defaultValue: false },
+        { type: 'color', messageKey: 'Set1_lightColor', label: 'Set 1 Backlight Color', allowGray: false, sunlight: true, defaultValue: '0xFFFFFF' },
+        { type: 'toggle', messageKey: 'Set2_lightColorEnabled', label: 'Set 2 Custom Backlight', defaultValue: false },
+        { type: 'color', messageKey: 'Set2_lightColor', label: 'Set 2 Backlight Color', allowGray: false, sunlight: true, defaultValue: '0xFFFFFF' }
       ]
     },
-
     {
-      type: 'section',
+      type: 'section', collapsed: true,
       items: [
-        { type: 'heading', defaultValue: 'Color Theme' },
-        {
-          type: 'radiogroup',
-          id: 'ColorSet',
-          label: 'Apply to Color Set',
-          defaultValue: '1',
-          options: [
-            { label: 'Set 1', value: '1' },
-            { label: 'Set 2', value: '2' }
-          ]
-        },
-        {
-          type: 'select',
-          id: 'Theme',
-          label: 'Theme',
-          defaultValue: '',
-          options: [
-             { label: 'Select a Theme', value: '' }
-          ].concat(themes.map(function(t) { return { label: t.theme[0].name, value: t.theme[0].name }; }))
-        }
-      ]
-    },
-
-    {
-      type: 'section',
-      items: [
-        { type: 'heading', defaultValue: 'Color Set 1' },
-        {
-          type: 'preview',
-          id: 'PreviewSet1',
-          defaultValue: ''
-        }
+        { type: 'heading', defaultValue: 'Color Set 1 (custom colours)' },
+        { type: 'preview', id: 'PreviewSet1', defaultValue: '' }
       ].concat(set1Items)
     },
-
     {
-      type: 'section',
+      type: 'section', collapsed: true,
       items: [
-        { type: 'heading', defaultValue: 'Color Set 2' },
-        {
-          type: 'preview',
-          id: 'PreviewSet2',
-          defaultValue: ''
-        }
+        { type: 'heading', defaultValue: 'Color Set 2 (custom colours)' },
+        { type: 'preview', id: 'PreviewSet2', defaultValue: '' }
       ].concat(set2Items)
     },
-
     {
-      type: 'section',
+      type: 'section', collapsed: true,
       items: [
         { type: 'heading', defaultValue: 'Export Themes' },
-        { type: 'text', defaultValue: '<p>Tap the Export button, then select all text in the area below and copy.</p>' },
+        { type: 'text', defaultValue: 'Tap the Export button, then select all text in the area below and copy.' },
         { type: 'themeexport', id: 'ThemeExport', defaultValue: '' },
         { type: 'button', id: 'ExportThemes', defaultValue: 'Export' },
-        { type: 'text', defaultValue: '<p>If you want to add your theme to the built-in themes, submit a PR or an issue at <a href="https://github.com/sgitaize/dubv4cgm" target="_blank">github.com/sgitaize/dubv4cgm</a> and paste it there.</p>' }
+        { type: 'text', defaultValue: 'If you want to add your theme to the built-in themes, submit a PR or an issue at <a href="https://github.com/sgitaize/dubv4cgm" target="_blank">github.com/sgitaize/dubv4cgm</a> and paste it there.' }
       ]
-    },
-
-    {
-      type: 'submit',
-      defaultValue: 'Save Settings'
     }
-  ]);
+  ];
 
   window.DUB_CONFIG = config;
 })();

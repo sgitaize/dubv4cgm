@@ -510,6 +510,14 @@ void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
       snprintf(full_date_text, sizeof(full_date_text), "%s %s %s",
                date_day, date_month, date_monthday + 1);
     }
+    if (LANG_DE) {
+      // German: "So 16. Aug" (strftime only knows English names)
+      static const char *days_de[] = {"So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"};
+      static const char *months_de[] = {"Jan", "Feb", "Mär", "Apr", "Mai", "Jun",
+                                        "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"};
+      snprintf(full_date_text, sizeof(full_date_text), "%s %d. %s",
+               days_de[tick_time->tm_wday], tick_time->tm_mday, months_de[tick_time->tm_mon]);
+    }
     snprintf(date_text_buf, sizeof(date_text_buf), "%s", full_date_text);
     snprintf(fctx_date_text, sizeof(fctx_date_text), "%s", full_date_text);
     if (date_text_layer) text_layer_set_text(date_text_layer, date_text_buf);

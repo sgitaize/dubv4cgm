@@ -1,7 +1,7 @@
 {
   "name": "dubv4cgm",
   "author": "sgitaize",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "keywords": [
     "pebble-app"
   ],
@@ -122,6 +122,7 @@
       "VibeLow",
       "VibeHigh",
       "CgmBacklight",
+      "Language",
       "CgmValue",
       "CgmDelta",
       "CgmTrend",
@@ -153,7 +154,7 @@
           "type": "font"
         },
         {
-          "characterRegex": "[0-9 A-Za-z%.:,+° --/' ~]",
+          "characterRegex": "[0-9 A-Za-z%.:,+° --/' ~ÄÖÜäöüß]",
           "file": "fonts/lucon.ttf",
           "name": "FONT_LUCIDIA_14",
           "type": "font"

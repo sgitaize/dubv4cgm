@@ -35,6 +35,16 @@
   .save { position: fixed; left: 0; right: 0; bottom: 0; padding: 10px; background: #222; text-align: center; }
   .save button { width: 100%; max-width: 500px; }
   .preview { padding: 12px 0; }
+  .preview > div { display: flex; justify-content: center; }
+  details > summary { list-style: none; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+  details > summary::-webkit-details-marker { display: none; }
+  details > summary h2 { margin: 8px 0; }
+  details > summary:after { content: "▸"; color: #ff4700; font-size: 18px; transition: .15s; }
+  details[open] > summary:after { transform: rotate(90deg); }
+  section.more { background: #3d3d3d; }
+  .picker { display: flex; gap: 6px; align-items: center; padding: 8px 0; }
+  .picker select { flex: 1; min-width: 0; max-width: none; }
+  .picker button { padding: 6px 12px; font-size: 18px; line-height: 1; }
   #palette { position: fixed; inset: 0; background: rgba(0,0,0,.75); display: none; align-items: center; justify-content: center; z-index: 10; }
   #palette .grid { display: grid; grid-template-columns: repeat(8, 36px); gap: 4px; background: #222; padding: 10px; border-radius: 6px; }
   #palette .grid div { width: 36px; height: 36px; border-radius: 3px; cursor: pointer; border: 1px solid #555; }
@@ -45,6 +55,7 @@
 <div class="save"><button id="save">Save Settings</button></div>
 <div id="palette"><div class="grid"></div></div>
 <script src="preview.js"></script>
+<script src="i18n.js"></script>
 <script>
 (function() {
   'use strict';
@@ -59,6 +70,12 @@
     return m ? decodeURIComponent(m[1]) : 'pebblejs://close#';
   }
   var saved = readConfig();
+  // Language: stored setting, otherwise the phone's language
+  if (saved.Language === undefined) saved.Language = /^de/i.test(navigator.language || '') ? '1' : '0';
+  function T(txt) {
+    var d = (window.DUB_I18N || {})[String(saved.Language) === '1' ? 'de' : ''];
+    return (d && d[txt]) || txt;
+  }
 
   var SUNLIGHT = {
     '000000':'000000','000055':'001e41','0000aa':'004387','0000ff':'0068ca','005500':'2b4a2c','005555':'27514f','0055aa':'16638d','0055ff':'007dce',
@@ -124,14 +141,22 @@
     var it = { cfg: cfg }, row, input;
     switch (cfg.type) {
       case 'heading':
-        parent.appendChild(h(cfg.size ? 'h4' : 'h2', { html: cfg.defaultValue }));
+        parent.appendChild(h(cfg.size ? 'h4' : 'h2', { html: T(cfg.defaultValue) }));
         return;
       case 'text':
-        parent.appendChild(h('div', { 'class': 'text', html: cfg.defaultValue }));
+        parent.appendChild(h('div', { 'class': 'text', html: T(cfg.defaultValue) }));
         return;
       case 'section':
-        var sec = h('section');
-        cfg.items.forEach(function(c) { render(c, sec); });
+        var sec = h('section'), body = sec, list = cfg.items;
+        if (cfg.collapsed) {
+          // collapsed section: first heading becomes the tap-to-open summary
+          sec.className = 'more';
+          body = h('details');
+          body.appendChild(h('summary', {}, [h('h2', { html: T(list[0].defaultValue) })]));
+          sec.appendChild(body);
+          list = list.slice(1);
+        }
+        list.forEach(function(c) { render(c, body); });
         parent.appendChild(sec);
         return;
       case 'submit':
@@ -139,16 +164,16 @@
       case 'toggle':
         input = h('input', { type: 'checkbox' });
         input.checked = initial(cfg) === true || initial(cfg) === 1 || initial(cfg) === '1';
-        row = h('div', { 'class': 'row' }, [h('label', { text: cfg.label }), h('label', { 'class': 'toggle' }, [input, h('span')])]);
+        row = h('div', { 'class': 'row' }, [h('label', { text: T(cfg.label) }), h('label', { 'class': 'toggle' }, [input, h('span')])]);
         it.get = function() { return input.checked; };
         it.set = function(v) { input.checked = !!v; };
         input.onchange = function() { changed(it); };
         break;
       case 'select':
         input = h('select');
-        cfg.options.forEach(function(o) { input.appendChild(h('option', { value: o.value, text: o.label })); });
+        cfg.options.forEach(function(o) { input.appendChild(h('option', { value: o.value, text: T(o.label) })); });
         input.value = String(initial(cfg));
-        row = h('div', { 'class': 'row' }, [h('label', { text: cfg.label }), input]);
+        row = h('div', { 'class': 'row' }, [h('label', { text: T(cfg.label) }), input]);
         it.get = function() { return input.value; };
         it.set = function(v) { input.value = String(v); };
         input.onchange = function() { changed(it); };
@@ -158,7 +183,7 @@
         input = h('input', { type: at.type || 'text', placeholder: at.placeholder || '', autocapitalize: 'off', autocorrect: 'off', spellcheck: 'false' });
         if (at.step) input.step = at.step;
         input.value = initial(cfg) == null ? '' : String(initial(cfg));
-        row = h('div', { 'class': 'row' }, [h('label', { text: cfg.label }), input]);
+        row = h('div', { 'class': 'row' }, [h('label', { text: T(cfg.label) }), input]);
         it.get = function() { return input.value.trim(); };
         it.set = function(v) { input.value = v; };
         input.oninput = function() { changed(it); };
@@ -171,9 +196,9 @@
           r.checked = String(initial(cfg)) === o.value;
           r.onchange = function() { changed(it); };
           radios.push(r);
-          box.appendChild(h('label', {}, [r, document.createTextNode(' ' + o.label)]));
+          box.appendChild(h('label', {}, [r, document.createTextNode(' ' + T(o.label))]));
         });
-        row = h('div', { 'class': 'row' }, [h('label', { text: cfg.label }), box]);
+        row = h('div', { 'class': 'row' }, [h('label', { text: T(cfg.label) }), box]);
         it.get = function() { for (var i = 0; i < radios.length; i++) if (radios[i].checked) return radios[i].value; return cfg.defaultValue; };
         it.set = function(v) { radios.forEach(function(r) { r.checked = r.value === String(v); }); };
         break;
@@ -183,12 +208,41 @@
         function paint() { sw.style.background = cfg.sunlight === false ? '#' + hex6(val) : displayHex(val); }
         paint();
         sw.onclick = function() { palTarget = function(v) { it.set(v); changed(it); }; pal.style.display = 'flex'; };
-        row = h('div', { 'class': 'row' }, [h('label', { text: cfg.label }), sw]);
+        row = h('div', { 'class': 'row' }, [h('label', { text: T(cfg.label) }), sw]);
         it.get = function() { return val; };
         it.set = function(v) { val = snap(toInt(v)); paint(); };
         break;
+      case 'themepicker':
+        // preset select with ◀ ▶ (and random) to flip through the themes
+        input = h('select');
+        cfg.options.forEach(function(o) { input.appendChild(h('option', { value: o.value, text: T(o.label) })); });
+        input.value = '';
+        var step = function(d) {
+          var n = cfg.options.length - 1, i = input.selectedIndex;   // 0 = "Select a Theme"
+          if (d === 0) i = 1 + Math.floor(Math.random() * n);
+          else if (i === 0) i = d > 0 ? 1 : n;
+          else i = ((i - 1 + d + n) % n) + 1;
+          input.selectedIndex = i;
+          changed(it);
+        };
+        var btn = function(txt, title, d) {
+          var b = h('button', { type: 'button', text: txt, title: T(title), 'aria-label': T(title) });
+          b.onclick = function() { step(d); };
+          return b;
+        };
+        row = h('div', {}, [h('label', { text: T(cfg.label) }),
+          h('div', { 'class': 'picker' }, [btn('◀', 'Previous preset', -1), input,
+            btn('▶', 'Next preset', 1), btn('⚄', 'Random preset', 0)])]);
+        it.get = function() { return input.value; };
+        it.set = function(v) { input.value = String(v); };
+        input.onchange = function() { changed(it); };
+        break;
       case 'preview':
-        row = h('div', { 'class': 'preview', html: window.DUB_PREVIEW.template });
+        var tpl = window.DUB_PREVIEW.template;
+        if (String(saved.Language) === '1') {
+          [['WED 22', 'MI 22']].forEach(function(r) { tpl = tpl.split(r[0]).join(r[1]); });
+        }
+        row = h('div', { 'class': 'preview', html: tpl });
         it.root = row;
         it.get = function() {};
         break;
@@ -199,7 +253,7 @@
         it.set = function(v) { input.value = v; };
         break;
       case 'button':
-        input = h('button', { type: 'button', text: cfg.defaultValue });
+        input = h('button', { type: 'button', text: T(cfg.defaultValue) });
         row = h('div', { 'class': 'row' }, [input]);
         input.onclick = function() { if (it.onclick) it.onclick(); };
         it.get = function() {};
@@ -208,7 +262,8 @@
         return;
     }
     parent.appendChild(row);
-    if (cfg.description) parent.appendChild(h('div', { 'class': 'desc', text: cfg.description }));
+    it.row = row;
+    if (cfg.description) parent.appendChild(h('div', { 'class': 'desc', text: T(cfg.description) }));
     items.push(it);
     if (cfg.messageKey) byKey[cfg.messageKey] = it;
     if (cfg.id) byId[cfg.id] = it;
@@ -219,8 +274,12 @@
                    'd1','d2','d3','d4','d5','d6','d7','d8','d9','t1','t2','t3','t4','h1','h2'];
   var SVG_FILL = ['bl1', 'd4', 'd5'], SVG_STROKE = ['bl2', 'd3'], BORDER_KEYS = ['d1', 'd2'];
 
+  function currentSet() { return byId.ColorSet ? byId.ColorSet.get() : '1'; }
   function updatePreview(setNum) {
-    var pv = byId['PreviewSet' + setNum];
+    paintPreview(setNum, byId['PreviewSet' + setNum]);
+    if (String(setNum) === currentSet()) paintPreview(setNum, byId.PreviewTheme);
+  }
+  function paintPreview(setNum, pv) {
     if (!pv) return;
     colorKeys.forEach(function(key) {
       var it = byKey['Set' + setNum + '_' + key];
@@ -240,7 +299,7 @@
   }
 
   function applyTheme(name) {
-    var set = byId.ColorSet ? byId.ColorSet.get() : '1';
+    var set = currentSet();
     (window.DUB_THEMES || []).some(function(t) {
       var td = t.theme[0];
       if (td.name !== name) return false;
@@ -276,12 +335,36 @@
     });
   }
 
+  // Set 1/2 choice only matters when colour set switching is on
+  function showColorSet() {
+    var cs = byId.ColorSet, sw = byKey.SwitchSet;
+    if (!cs || !sw) return;
+    var row = cs.row;
+    row.style.display = sw.get() === '0' ? 'none' : '';
+    if (sw.get() === '0' && cs.get() !== '1') { cs.set('1'); updatePreview(1); }
+  }
+
+  function currentValues() {
+    var out = {};
+    items.forEach(function(it) {
+      if (it.cfg.messageKey) out[it.cfg.messageKey] = it.get();
+    });
+    return out;
+  }
+
+  var styled = false;
   function build() {
     var app = document.getElementById('app');
     app.innerHTML = '';
-    var style = document.createElement('style');
-    style.textContent = window.DUB_PREVIEW.style;
-    document.head.appendChild(style);
+    items = []; byKey = {}; byId = {}; listeners = [];
+    if (!styled) {
+      var style = document.createElement('style');
+      style.textContent = window.DUB_PREVIEW.style;
+      document.head.appendChild(style);
+      styled = true;
+    }
+    document.title = '91 Dub CGM – ' + T('Settings');
+    document.getElementById('save').textContent = T('Save Settings');
     window.DUB_CONFIG.forEach(function(c) { render(c, app); });
     if (!saved.CgmHigh && saved.CgmUnits === '1') unitSwitched();
 
@@ -290,19 +373,25 @@
       if (/^Set1_/.test(k)) updatePreview(1);
       if (/^Set2_/.test(k)) updatePreview(2);
       if (it.cfg.id === 'Theme') applyTheme(it.get());
-      if (it.cfg.id === 'ColorSet' && byId.Theme) byId.Theme.set('');
+      if (it.cfg.id === 'ColorSet') { if (byId.Theme) byId.Theme.set(''); updatePreview(currentSet()); }
+      if (k === 'SwitchSet') showColorSet();
       if (k === 'CgmUnits') unitSwitched();
+      if (k === 'Language') {
+        // re-render in the new language, keeping every current value
+        var open = [].map.call(document.querySelectorAll('details'), function(d) { return d.open; });
+        saved = currentValues();
+        build();
+        [].forEach.call(document.querySelectorAll('details'), function(d, i) { d.open = !!open[i]; });
+      }
     });
+    showColorSet();
     if (byId.ExportThemes) byId.ExportThemes.onclick = function() { byId.ThemeExport.set(exportThemes()); };
     updatePreview(1);
     updatePreview(2);
   }
 
   document.getElementById('save').onclick = function() {
-    var out = {};
-    items.forEach(function(it) {
-      if (it.cfg.messageKey) out[it.cfg.messageKey] = it.get();
-    });
+    var out = currentValues();
     location.href = returnTo() + encodeURIComponent(JSON.stringify(out));
   };
 
