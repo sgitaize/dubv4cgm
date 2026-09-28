@@ -1,0 +1,1 @@
+Settings page reorganised: quick setup on top (language, colour preset with preview, Nightscout, complications), everything else collapsible. New: English / Deutsch for weather, date, status texts and the settings page.

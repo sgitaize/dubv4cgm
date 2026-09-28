@@ -29,6 +29,7 @@ based on the great [91 Dub v4.0](https://github.com/orviwan/91-dub-4.0) by Orviw
 - Everything from 91 Dub v5 plus: steps / sleep, heart rate, 3 digital fonts,
   anti-aliasing, 2 colour sets (switch by time or tap), 90+ themes,
   custom backlight colour, power save, left-handed mode …
+- Pebble App Store: https://apps.rePebble.com/49c4f560ff4141548025f29f
 - Settings page on GitHub Pages: https://sgitaize.github.io/dubv4cgm/config/ –
   quick setup (language, colour preset, Nightscout, complications) on top,
   everything else collapsible

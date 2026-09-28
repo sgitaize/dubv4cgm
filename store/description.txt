@@ -1,0 +1,12 @@
+The classic 91 Dub look for Pebble Time 2 – now with live Nightscout CGM (blood glucose). As a diabetic you want a cool watchface too.
+
+- Glucose value with trend arrow and delta in the panel, coloured by your low/high thresholds (mg/dL or mmol/L); old values are struck through
+- Battery-friendly sync right after each new sensor reading, watchdog if the phone's timer dies
+- Optional vibration and RGB backlight colour (Pebble Time 2) on low / high
+- Four edge labels: CGM value, CGM age, weather (Open-Meteo), steps, heart rate, battery
+- 200+ colour presets with live preview, two colour sets (switch by time or tap), 3 digital fonts, power save, left-handed mode
+- English / Deutsch (watch texts and settings page)
+
+Open source: https://github.com/sgitaize/dubv4cgm
+Based on 91 Dub by orviwan (Jon Barlow) and 91 Dub v5 plus by dflo – thank you!
+~95 % vibe coded with Claude Code.
