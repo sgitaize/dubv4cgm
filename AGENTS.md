@@ -1,3 +1,45 @@
+# dubv4cgm additions (read first)
+
+dubv4cgm = 91 Dub v5 plus + Nightscout CGM, weather, configurable edge labels,
+settings page on GitHub Pages instead of Clay. Everything below this section is
+the upstream architecture and still valid.
+
+- `src/c/complications.c` – CGM state (value, delta, trend, status, timestamp,
+  sgv in mg/dL), weather, steps/HR cache; draws panel row 1 (`CGM_LAYER`, hidden
+  when `SlotMain` = 1 → upstream steps layer from `health.c` is shown instead);
+  fills the four edge labels via `decorations_set_label()`; minute tick
+  (called from `timedigits.c` `handle_tick`) does the watchdog (`RequestBg`
+  when the reading is older than interval + 3 min, at most every 3 min),
+  BT-reconnect fetch, health refresh. `complications_backlight_color()` is
+  used by `settings.c` `apply_light_color()` (setting `CgmBacklight`).
+- `src/c/decorations.c` – label texts live in `label_buf[]` (survive reloads);
+  4th label `button_free_layer` on the corner without a button
+  (bottom-left, top-right in left-hand mode).
+- `src/c/clay_wrapper.c` – inbox: `complications_inbox()` first; data-only
+  messages (CGM/weather, no `SlotMain`) return early → no settings save/reload.
+  Every settings message contains `SlotMain`.
+- `src/c/settings.h` – new fields appended to the packed `Settings` struct
+  (persist compatibility): Slot*, Cgm*, Vibe*, CgmBacklight.
+- `src/pkjs/index.js` – no Clay. Settings JSON from the page is stored in
+  `localStorage['dubv4cgm_settings']` and sent by message-key name (colours as
+  int, toggles 1/0, selects as strings like Clay). Phone-only: `NsUrl`,
+  `NsToken`, `CgmUnits`, `CgmInterval`, `WeatherUnits`; `CgmHigh/Low` are
+  converted to mg/dL, `CgmStaleMin` = 2 × interval. Nightscout fetch and
+  schedule = casiocgm v2.3.5 (learned upload lag, probe, 25 s XHR guard).
+  `CgmStatus`: 0 OK, 1 no data, 2 no connection, 3 old, 4 no URL.
+  `CgmTs` is shifted to the phone clock (server skew). Weather: Open-Meteo
+  every 30 min (`WeatherTemp`, `WeatherCode` = WMO code).
+- `docs/config/` – GitHub Pages settings page: `index.html` (small renderer for
+  Clay-style items: section, heading, text, toggle, select, input, color,
+  radiogroup, preview, button, themeexport), `schema.js` (upstream Clay config
+  + CGM / complication sections), `preview.js` (upstream preview component),
+  `themes.json`. Settings come in as `#config=<json>`, go back via
+  `return_to` + JSON.
+- Font `FONT_LUCIDIA_14` (labels) charset includes `+` and `°`; keep label
+  texts within that set (upper case, digits, `%.:,+-/'°`).
+
+---
+
 # 91-dub-v5 Architecture & Patterns
 
 ## Overview

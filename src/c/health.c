@@ -164,6 +164,8 @@ void health_init() {
 
   health_layer = layer_create(HEALTH_LAYER);
   layer_add_child(my_window_layer, health_layer);
+  // dubv4cgm: row 1 shows the CGM value unless SlotMain = steps
+  layer_set_hidden(health_layer, global_settings.SlotMain == 0);
 
   health_text_layer = text_layer_create_detailed(HEALTH_TEXT_LAYER, false,
                                 GColorClear, color_helper(colors[c_h1], global_settings.Invert),

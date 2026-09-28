@@ -1,5 +1,7 @@
+// Settings schema (Clay format, from 91 Dub v5 plus) + dubv4cgm sections.
+// Rendered by index.html; window.DUB_THEMES must be loaded first.
 (function() {
-  var themes = require('./themes.json');
+  var themes = window.DUB_THEMES || [];
   var timeOptions = [];
   for (var i = 0; i < 24; i++) {
     for (var j = 0; j < 2; j++) {
@@ -25,7 +27,7 @@
     d:  ['Line Top', 'Line Bottom', 'Box Border', 'Box Fill',
           'WR Letters', 'Water Resist Text', 'Button Labels', 'Button Arrows', 'Branding Text'],
     t:  ['Date', 'AM/PM/24H', 'Time Shadow', 'Time'],
-    h:  ['Steps', 'Heart Rate']
+    h:  ['Steps / CGM', 'Heart Rate']
   };
 
   var shortNames = {
@@ -100,8 +102,62 @@
   var set1Items = buildColorItems('Set1', defaults1, labels1, shortNames);
   var set2Items = buildColorItems('Set2', defaults1, labels1, shortNames);
 
+  var slotOptions = [
+            { label: 'Original label', value: '0' },
+            { label: 'Empty', value: '1' },
+            { label: 'CGM value + delta', value: '2' },
+            { label: 'CGM age', value: '3' },
+            { label: 'Weather', value: '4' },
+            { label: 'Steps', value: '5' },
+            { label: 'Heart rate', value: '6' },
+            { label: 'Battery', value: '7' }
+          ];
+
+  var cgmSections = [
+    {
+      type: 'section',
+      items: [
+        { type: 'heading', defaultValue: 'Nightscout CGM' },
+        { type: 'input', messageKey: 'NsUrl', label: 'Nightscout URL', defaultValue: '',
+          attributes: { placeholder: 'https://my-site.herokuapp.com', type: 'url', autocapitalize: 'off', autocorrect: 'off' } },
+        { type: 'input', messageKey: 'NsToken', label: 'Access token (optional)', defaultValue: '',
+          attributes: { placeholder: 'readable-1234abcd', autocapitalize: 'off', autocorrect: 'off' } },
+        { type: 'select', messageKey: 'CgmUnits', label: 'Units', defaultValue: '0',
+          options: [ { label: 'mg/dL', value: '0' }, { label: 'mmol/L', value: '1' } ] },
+        { type: 'select', messageKey: 'CgmInterval', label: 'Sensor interval', defaultValue: '5',
+          options: [ { label: '5 minutes (Dexcom, Libre via xDrip …)', value: '5' }, { label: '1 minute (Libre 3 …)', value: '1' } ],
+          description: 'Values older than 2x the interval are shown struck through.' },
+        { type: 'input', messageKey: 'CgmHigh', label: 'High above', defaultValue: '180', attributes: { type: 'number', step: 'any' } },
+        { type: 'input', messageKey: 'CgmLow', label: 'Low below', defaultValue: '70', attributes: { type: 'number', step: 'any' } },
+        { type: 'toggle', messageKey: 'CgmColorize', label: 'Colour high / low values', defaultValue: true },
+        { type: 'color', messageKey: 'CgmColorHigh', label: 'High colour', defaultValue: '0xFF5500', sunlight: true },
+        { type: 'color', messageKey: 'CgmColorLow', label: 'Low colour', defaultValue: '0xFF0000', sunlight: true },
+        { type: 'toggle', messageKey: 'CgmBacklight', label: 'Backlight in high / low colour', defaultValue: false,
+          description: 'Pebble Time 2: while the value is out of range the backlight lights up in the high or low colour.' },
+        { type: 'toggle', messageKey: 'VibeLow', label: 'Vibrate on low (every 10 min)', defaultValue: false },
+        { type: 'toggle', messageKey: 'VibeHigh', label: 'Vibrate on high (every 10 min)', defaultValue: false }
+      ]
+    },
+    {
+      type: 'section',
+      items: [
+        { type: 'heading', defaultValue: 'Complications' },
+        { type: 'select', messageKey: 'SlotMain', label: 'Panel top row', defaultValue: '0',
+          options: [ { label: 'CGM', value: '0' }, { label: 'Steps / sleep (original)', value: '1' } ] },
+        { type: 'select', messageKey: 'SlotTL', label: 'Top left (LIGHT)', defaultValue: '0', options: slotOptions },
+        { type: 'select', messageKey: 'SlotTR', label: 'Top right (PREV)', defaultValue: '4', options: slotOptions },
+        { type: 'select', messageKey: 'SlotBL', label: 'Bottom left', defaultValue: '3', options: slotOptions },
+        { type: 'select', messageKey: 'SlotBR', label: 'Bottom right (NEXT)', defaultValue: '5', options: slotOptions },
+        { type: 'select', messageKey: 'WeatherUnits', label: 'Temperature', defaultValue: '0',
+          options: [ { label: '°C', value: '0' }, { label: '°F', value: '1' } ] },
+        { type: 'text', defaultValue: 'Left-handed mode swaps the corners. Keep the two labels of a row short enough to fit next to each other. Weather: Open-Meteo, needs location access for the Pebble app.' }
+      ]
+    }
+  ];
+
   var config = [
-    { type: 'heading', defaultValue: 'Settings' },
+    { type: 'heading', defaultValue: '91 Dub CGM' },
+  ].concat(cgmSections).concat([
 
     {
       type: 'section',
@@ -379,7 +435,7 @@
         { type: 'text', defaultValue: '<p>Tap the Export button, then select all text in the area below and copy.</p>' },
         { type: 'themeexport', id: 'ThemeExport', defaultValue: '' },
         { type: 'button', id: 'ExportThemes', defaultValue: 'Export' },
-        { type: 'text', defaultValue: '<p>If you want to add your theme to the built-in themes, submit a PR or an issue at <a href="https://codeberg.org/lightrush/91-dub-v5" target="_blank">https://codeberg.org/lightrush/91-dub-v5</a> and paste it there.</p>' }
+        { type: 'text', defaultValue: '<p>If you want to add your theme to the built-in themes, submit a PR or an issue at <a href="https://github.com/sgitaize/dubv4cgm" target="_blank">github.com/sgitaize/dubv4cgm</a> and paste it there.</p>' }
       ]
     },
 
@@ -387,7 +443,7 @@
       type: 'submit',
       defaultValue: 'Save Settings'
     }
-  ];
+  ]);
 
-  module.exports = config;
+  window.DUB_CONFIG = config;
 })();

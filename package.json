@@ -1,7 +1,7 @@
 {
-  "name": "91-dub-v5-plus",
-  "author": "dflo",
-  "version": "6.0.20",
+  "name": "dubv4cgm",
+  "author": "sgitaize",
+  "version": "1.0.0",
   "keywords": [
     "pebble-app"
   ],
@@ -10,12 +10,11 @@
     "build-fonts": "node scripts/build-fonts.js"
   },
   "dependencies": {
-    "@rebble/clay": "^1.0.8",
     "pebble-fctx": "^1.6.5"
   },
   "pebble": {
-    "displayName": "91 Dub v5 plus",
-    "uuid": "e4b21fef-5fb7-4864-bfcb-0dc1693ec1c8",
+    "displayName": "91 Dub CGM",
+    "uuid": "21e36090-718a-4e85-9b32-dbda3a0cdcd7",
     "sdkVersion": "3",
     "enableMultiJS": true,
     "targetPlatforms": [
@@ -26,7 +25,8 @@
     },
     "capabilities": [
       "configurable",
-      "health"
+      "health",
+      "location"
     ],
     "messageKeys": [
       "Health",
@@ -107,7 +107,30 @@
       "Set2_h2",
       "FontFaceDigital",
       "UseAntialiasing",
-      "ColorBias"
+      "ColorBias",
+      "SlotMain",
+      "SlotTL",
+      "SlotTR",
+      "SlotBR",
+      "SlotBL",
+      "CgmColorize",
+      "CgmColorHigh",
+      "CgmColorLow",
+      "CgmHigh",
+      "CgmLow",
+      "CgmStaleMin",
+      "VibeLow",
+      "VibeHigh",
+      "CgmBacklight",
+      "CgmValue",
+      "CgmDelta",
+      "CgmTrend",
+      "CgmSgv",
+      "CgmTs",
+      "CgmStatus",
+      "WeatherTemp",
+      "WeatherCode",
+      "RequestBg"
     ],
     "resources": {
       "media": [
@@ -130,7 +153,7 @@
           "type": "font"
         },
         {
-          "characterRegex": "[0-9 A-Za-z%.:, --/' ~]",
+          "characterRegex": "[0-9 A-Za-z%.:,+° --/' ~]",
           "file": "fonts/lucon.ttf",
           "name": "FONT_LUCIDIA_14",
           "type": "font"

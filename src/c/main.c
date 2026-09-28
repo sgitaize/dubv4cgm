@@ -11,6 +11,7 @@
 #include "window.h"
 #include "background.h"
 #include "unobstructed.h"
+#include "complications.h"
 
 #define HANDSHAKE_KEY 9999
 
@@ -22,6 +23,7 @@ void reload(void){
   bluetooth_deinit();
   decorations_deinit();
   unobstructed_deinit();
+  complications_deinit();
   fonts_init();
   background_init();
   decorations_init();
@@ -31,6 +33,7 @@ void reload(void){
     health_init();
   #endif
   bluetooth_init();
+  complications_init();
   appStarted = true;
 }
 
@@ -53,6 +56,7 @@ void handle_init(void) {
     #endif
     bluetooth_init();
   }
+  complications_init();
 
   appStarted = true;
   update_settings();
@@ -66,6 +70,7 @@ void handle_init(void) {
 
 void handle_deinit(void) {
   clay_wrapper_deinit();
+  complications_deinit();
   background_deinit();
   fonts_deinit();
   timedigits_deinit();

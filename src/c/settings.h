@@ -5,7 +5,7 @@
 #define COLORSET1_KEY 1341
 #define COLORSET2_KEY 1342
 
-#define SETTINGS_CALLBACKS_COUNT 7
+#define SETTINGS_CALLBACKS_COUNT 8
 #define COLORS_NUM 28
 
 typedef enum SettingsCallback {
@@ -15,7 +15,8 @@ typedef enum SettingsCallback {
   SETTINGS_CALLBACK_DECORATIONS = 3,
   SETTINGS_CALLBACK_TIMEDIGITS = 4,
   SETTINGS_CALLBACK_BACKGROUND = 5,
-  SETTINGS_CALLBACK_HEALTH = 6
+  SETTINGS_CALLBACK_HEALTH = 6,
+  SETTINGS_CALLBACK_COMPLICATIONS = 7
 } SettingsCallback;
 
 enum {
@@ -57,6 +58,21 @@ typedef struct Settings {
   uint8_t UseAntialiasing;
   int8_t ColorBias;
   uint8_t LeftHand;
+  // dubv4cgm (appended, see note above)
+  uint8_t SlotMain;      // panel row 1: 0=CGM, 1=steps/sleep (original)
+  uint8_t SlotTL;        // edge labels, see complications.h (LIGHT position)
+  uint8_t SlotTR;        // PREV position
+  uint8_t SlotBR;        // NEXT position
+  uint8_t SlotBL;        // free position (no button)
+  uint8_t CgmColorize;   // 1=high/low values in their colours
+  uint8_t CgmColorHigh;  // GColor.argb
+  uint8_t CgmColorLow;   // GColor.argb
+  uint16_t CgmHigh;      // mg/dL
+  uint16_t CgmLow;       // mg/dL
+  uint8_t CgmStaleMin;   // stale after (2x sensor interval, min 5)
+  uint8_t VibeLow;
+  uint8_t VibeHigh;
+  uint8_t CgmBacklight;  // 1=backlight in the high/low colour while out of range
 } __attribute__((__packed__)) Settings;
 
 extern Settings global_settings;

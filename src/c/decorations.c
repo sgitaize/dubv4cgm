@@ -8,6 +8,27 @@
 
 static Layer *decorations_layer, *wr_outer_layer, *button_back_icon_layer, *button_next_icon_layer, *button_prev_icon_layer;
 static TextLayer *water_layer, *resist_layer, *button_back_layer, *button_next_layer, *button_prev_layer;
+static TextLayer *button_free_layer = NULL;  // dubv4cgm: 4th label on the corner without a button
+
+// Label texts (dubv4cgm: set by complications.c, survive reloads)
+static char label_buf[DEC_LABEL_COUNT][24] = {"LIGHT", "PREV", "NEXT", ""};
+static TextLayer **label_layers[DEC_LABEL_COUNT] = {&button_back_layer, &button_prev_layer, &button_next_layer, &button_free_layer};
+
+void decorations_set_label(uint8_t idx, const char *text) {
+  if (idx >= DEC_LABEL_COUNT) return;
+  if (strncmp(label_buf[idx], text, sizeof(label_buf[idx])) == 0) return;
+  snprintf(label_buf[idx], sizeof(label_buf[idx]), "%s", text);
+  if (*label_layers[idx]) layer_mark_dirty(text_layer_get_layer(*label_layers[idx]));
+}
+
+// Free corner: bottom-left, or top-right in left-hand mode. No arrow, so the
+// text starts at the arrow's edge gap.
+static void free_label_frame(GRect *frame, GTextAlignment *align) {
+  bool lh = global_settings.LeftHand;
+  int y = (lh ? DECORATIONS_LABEL_Y_TOP : DECORATIONS_LABEL_Y_BOTTOM) - DECORATIONS_TEXT_Y_OFFSET;
+  *frame = GRect(DECORATIONS_ARROW_EDGE_GAP, y, FULLSCREEN.size.w - 2 * DECORATIONS_ARROW_EDGE_GAP, DECORATIONS_LABEL_H);
+  *align = lh ? GTextAlignmentRight : GTextAlignmentLeft;
+}
 static BitmapLayer *logo_layer;
 static GBitmap *logo_image;
 static int8_t current_logo = -1;
@@ -96,6 +117,7 @@ void decorations_settings_callback() {
   text_layer_set_text_color(button_back_layer, color_helper(colors[c_d7], global_settings.Invert));
   text_layer_set_text_color(button_next_layer, color_helper(colors[c_d7], global_settings.Invert));
   text_layer_set_text_color(button_prev_layer, color_helper(colors[c_d7], global_settings.Invert));
+  text_layer_set_text_color(button_free_layer, color_helper(colors[c_d7], global_settings.Invert));
 
   GColor * xcolors = gbitmap_get_palette(logo_image);
   xcolors[0].argb = color_helper(colors[c_bg4], global_settings.Invert).argb;
@@ -146,6 +168,12 @@ void decorations_settings_callback() {
   text_layer_set_text_alignment(button_back_layer, back_align);
   text_layer_set_text_alignment(button_next_layer, next_align);
   text_layer_set_text_alignment(button_prev_layer, prev_align);
+
+  GRect free_label;
+  GTextAlignment free_align;
+  free_label_frame(&free_label, &free_align);
+  layer_set_frame(text_layer_get_layer(button_free_layer), free_label);
+  text_layer_set_text_alignment(button_free_layer, free_align);
 
   layer_mark_dirty(decorations_layer);
 }
@@ -305,22 +333,32 @@ void decorations_init() {
   button_back_layer = text_layer_create_detailed(init_back_label, false, GColorClear
                                                     , color_helper(colors[c_d7], global_settings.Invert),
                                                     init_back_align, font_tiny);
-  text_layer_set_text(button_back_layer, "LIGHT");
+  text_layer_set_text(button_back_layer, label_buf[DEC_LABEL_BACK]);
   layer_add_child(decorations_layer, text_layer_get_layer(button_back_layer));
 
   // NEXT BUTTON LABEL
   button_next_layer = text_layer_create_detailed(init_next_label, false, GColorClear
                                                     , color_helper(colors[c_d7], global_settings.Invert),
                                                     init_next_align, font_tiny);
-  text_layer_set_text(button_next_layer, "NEXT");
+  text_layer_set_text(button_next_layer, label_buf[DEC_LABEL_NEXT]);
   layer_add_child(decorations_layer, text_layer_get_layer(button_next_layer));
 
   // PREV BUTTON LABEL
   button_prev_layer = text_layer_create_detailed(init_prev_label, false, GColorClear,
                                                       color_helper(colors[c_d7], global_settings.Invert),
                                                       init_prev_align, font_tiny);
-  text_layer_set_text(button_prev_layer, "PREV");
+  text_layer_set_text(button_prev_layer, label_buf[DEC_LABEL_PREV]);
   layer_add_child(decorations_layer, text_layer_get_layer(button_prev_layer));
+
+  // FREE CORNER LABEL (dubv4cgm)
+  GRect init_free_label;
+  GTextAlignment init_free_align;
+  free_label_frame(&init_free_label, &init_free_align);
+  button_free_layer = text_layer_create_detailed(init_free_label, false, GColorClear,
+                                                      color_helper(colors[c_d7], global_settings.Invert),
+                                                      init_free_align, font_tiny);
+  text_layer_set_text(button_free_layer, label_buf[DEC_LABEL_FREE]);
+  layer_add_child(decorations_layer, text_layer_get_layer(button_free_layer));
 
   // BRANDING LABEL
   logo_layer = bitmap_layer_create(DECORATIONS_LOGO);
@@ -360,6 +398,7 @@ void decorations_deinit() {
   layer_remove_from_parent(text_layer_get_layer(button_back_layer));
   layer_remove_from_parent(text_layer_get_layer(button_next_layer));
   layer_remove_from_parent(text_layer_get_layer(button_prev_layer));
+  layer_remove_from_parent(text_layer_get_layer(button_free_layer));
 
   layer_remove_from_parent(button_back_icon_layer);
   layer_remove_from_parent(button_next_icon_layer);
@@ -372,6 +411,8 @@ void decorations_deinit() {
   text_layer_destroy(button_back_layer);
   text_layer_destroy(button_next_layer);
   text_layer_destroy(button_prev_layer);
+  text_layer_destroy(button_free_layer);
+  button_free_layer = NULL;
 
   layer_destroy(button_back_icon_layer);
   layer_destroy(button_next_icon_layer);

@@ -1,5 +1,6 @@
 #include <pebble.h>
 #include "settings.h"
+#include "complications.h"
 #include "helpers.h"
 
 SettingsChangeCallback settings_callbacks[SETTINGS_CALLBACKS_COUNT] = {NULL};
@@ -222,6 +223,20 @@ void settings_default_values() {
   global_settings.UseAntialiasing = 0;
   global_settings.ColorBias = 0;
   global_settings.LeftHand = 0;
+  global_settings.SlotMain = 0;
+  global_settings.SlotTL = 0;   // "LIGHT"
+  global_settings.SlotTR = 4;   // weather
+  global_settings.SlotBR = 5;   // steps
+  global_settings.SlotBL = 3;   // CGM age
+  global_settings.CgmColorize = 1;
+  global_settings.CgmColorHigh = GColorOrange.argb;
+  global_settings.CgmColorLow = GColorRed.argb;
+  global_settings.CgmHigh = 180;
+  global_settings.CgmLow = 70;
+  global_settings.CgmStaleMin = 10;
+  global_settings.VibeLow = 0;
+  global_settings.VibeHigh = 0;
+  global_settings.CgmBacklight = 0;
   colors[c_lc] = GColorWhite;
   // Theme: 91 Dub v5 plus
   colors[c_bg1] = GColorChromeYellow;      // outer border amber
@@ -299,7 +314,10 @@ void timed_colorset(int8_t h, int8_t m){
 void apply_light_color() {
   #if defined(PBL_RGB_BACKLIGHT)
     bool enabled = (selectedSet == 0) ? global_settings.LightColorEnabled1 : global_settings.LightColorEnabled2;
-    if (enabled) {
+    GColor cgm;
+    if (complications_backlight_color(&cgm)) {
+      light_set_color(cgm);
+    } else if (enabled) {
       light_set_color(colors[c_lc]);
     } else {
       light_set_system_color();

@@ -1,3 +1,15 @@
+dubv4cgm (91 Dub CGM) is a fork of 91 Dub v5 plus by dflo, itself a fork of
+91 Dub v5 by lightrush, based on 91 Dub v4.0 by Jon Barlow (orviwan).
+
+dubv4cgm additions and changes (Nightscout CGM, weather and edge-label
+complications, GitHub Pages settings page):
+
+  Copyright (c) 2026 Simon Gutjahr
+
+  released under the same MIT-style license as below.
+
+----------------------------------------------------------------------------
+
 91 Dub v5, except where noted below, is made available under an MIT-style
 license, as below:
 

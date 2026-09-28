@@ -1,5 +1,12 @@
 # Changelog
 
+## dubv4cgm v1.0.0 (2026-09-28)
+
+- Fork of 91 Dub v5 plus 6.0.20 as "91 Dub CGM" (new UUID)
+- Nightscout CGM in the panel's top row (value, trend arrow, delta, high/low colours, stale = struck through, vibration and backlight colour on high/low)
+- Configurable edge labels: CGM, CGM age, weather (Open-Meteo), steps, heart rate, battery
+- Settings page moved from Clay to GitHub Pages (same options, themes and preview)
+
 ## v5.5.4
 
 - Add option for left hand usage (180° rotated)

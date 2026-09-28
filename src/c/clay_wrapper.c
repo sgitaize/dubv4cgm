@@ -1,5 +1,6 @@
 #include <pebble.h>
 #include "clay_wrapper.h"
+#include "complications.h"
 
 static int8_t parse_time_to_halfday(const char *str) {
   if (!str || str[2] != ':') return 0;
@@ -34,6 +35,9 @@ static int8_t parse_cstring_int8(const char *str) {
 static void clay_wrapper_inbox(DictionaryIterator *iter, void *context) {
   (void)context;
   int cnt = 0;
+
+  // CGM / weather data: no settings to apply or persist
+  if (complications_inbox(iter)) return;
 
   Tuple *t = dict_read_first(iter);
   while (t) {
@@ -128,6 +132,22 @@ static void clay_wrapper_inbox(DictionaryIterator *iter, void *context) {
     // Light color settings (sent as int32 hex values)
     else if (key == MESSAGE_KEY_Set1_lightColor) colorsSet1[c_lc] = GColorFromHEX(t->value->int32);
     else if (key == MESSAGE_KEY_Set2_lightColor) colorsSet2[c_lc] = GColorFromHEX(t->value->int32);
+
+    // dubv4cgm
+    else if (key == MESSAGE_KEY_SlotMain)    global_settings.SlotMain = parse_cstring_uint8(t->value->cstring);
+    else if (key == MESSAGE_KEY_SlotTL)      global_settings.SlotTL = parse_cstring_uint8(t->value->cstring);
+    else if (key == MESSAGE_KEY_SlotTR)      global_settings.SlotTR = parse_cstring_uint8(t->value->cstring);
+    else if (key == MESSAGE_KEY_SlotBR)      global_settings.SlotBR = parse_cstring_uint8(t->value->cstring);
+    else if (key == MESSAGE_KEY_SlotBL)      global_settings.SlotBL = parse_cstring_uint8(t->value->cstring);
+    else if (key == MESSAGE_KEY_CgmColorize) global_settings.CgmColorize = (uint8_t)t->value->int32;
+    else if (key == MESSAGE_KEY_CgmColorHigh) global_settings.CgmColorHigh = GColorFromHEX(t->value->int32).argb;
+    else if (key == MESSAGE_KEY_CgmColorLow)  global_settings.CgmColorLow = GColorFromHEX(t->value->int32).argb;
+    else if (key == MESSAGE_KEY_CgmHigh)     global_settings.CgmHigh = (uint16_t)t->value->int32;
+    else if (key == MESSAGE_KEY_CgmLow)      global_settings.CgmLow = (uint16_t)t->value->int32;
+    else if (key == MESSAGE_KEY_CgmStaleMin) global_settings.CgmStaleMin = (uint8_t)t->value->int32;
+    else if (key == MESSAGE_KEY_VibeLow)     global_settings.VibeLow = (uint8_t)t->value->int32;
+    else if (key == MESSAGE_KEY_CgmBacklight) global_settings.CgmBacklight = (uint8_t)t->value->int32;
+    else if (key == MESSAGE_KEY_VibeHigh)    global_settings.VibeHigh = (uint8_t)t->value->int32;
 
     t = dict_read_next(iter);
   }

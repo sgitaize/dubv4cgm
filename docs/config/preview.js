@@ -1,7 +1,8 @@
-// Static HTML simulation of the watchface for the Clay config UI preview.
+// Static HTML simulation of the watchface for the config page preview
+// (from 91 Dub v5 plus' Clay component; dubv4cgm adds the CGM row).
 // Dimensions are 144x168 (basalt) — intentionally not 1:1 with the target
 // emery device (200x228). This is a color-preview mockup, not a device replica.
-module.exports = {
+window.DUB_PREVIEW = {
   name: 'preview',
 
   template: '<div style="padding:16px 0;border-bottom:1px solid #666"><div data-preview-root="true" style="position:relative;color:#fff;font-family:DS-Digital,monospace;display:block;width:144px;height:168px;background:#000;border-radius:6px;overflow:hidden">' +
@@ -19,6 +20,7 @@ module.exports = {
     '<div style="font-family:monospace;font-size:9px;position:absolute;left:4px;top:22px;color:#fff"><span class="color-d8" style="position:relative;top:-1px">&#9664;</span> <span class="color-d7">LIGHT</span></div>' +
     '<div style="font-family:monospace;font-size:9px;position:absolute;right:4px;top:22px;color:#fff"><span class="color-d7">PREV</span> <span class="color-d8" style="position:relative;top:-1px">&#9654;</span></div>' +
     '<div style="font-family:monospace;font-size:9px;position:absolute;right:4px;bottom:18px;color:#fff"><span class="color-d7">NEXT</span> <span class="color-d8" style="position:relative;top:-1px">&#9654;</span></div>' +
+    '<div class="color-h1" style="font-family:sans-serif;font-weight:bold;font-size:12px;position:absolute;top:39px;left:22px;color:#000">123 &#8599; <span style="font-size:9px">+3</span></div>' +
     '<div class="color-bi1" data-preview-prop="borderColor" style="position:absolute;top:43px;right:6px;width:16px;height:9px;border:solid 1px #000"><div class="color-bi1" data-preview-prop="backgroundColor" style="position:relative;top:1px;background:#000;width:10px;height:5px;left:1px"></div></div>' +
     '<div class="color-bi1" data-preview-prop="color" style="font-family:monospace;font-size:10px;position:absolute;top:41px;right:23px;color:#000">80%</div>' +
     '<svg style="position:absolute;left:8px;top:42px" width="10" height="10">' +

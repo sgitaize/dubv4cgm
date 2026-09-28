@@ -1,5 +1,6 @@
 #include <pebble.h>
 #include "timedigits.h"
+#include "complications.h"
 #include "_globals.h"
 #include "settings.h"
 #include "helpers.h"
@@ -378,6 +379,7 @@ static void blink_timer_callback(void *data) {
 }
 
 void handle_tick(struct tm *tick_time, TimeUnits units_changed) {
+  if (appStarted && (units_changed & MINUTE_UNIT)) complications_minute_tick();
 
   if ((units_changed & SECOND_UNIT) && !powerSaveEngaged) {
 
