@@ -1,7 +1,7 @@
 {
   "name": "dubv4cgm",
   "author": "sgitaize",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "keywords": [
     "pebble-app"
   ],
@@ -131,7 +131,10 @@
       "CgmStatus",
       "WeatherTemp",
       "WeatherCode",
-      "RequestBg"
+      "RequestBg",
+      "CgmSource",
+      "CgmWakeNext",
+      "CgmWakeInterval"
     ],
     "resources": {
       "media": [

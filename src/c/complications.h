@@ -13,8 +13,8 @@ enum {
   SLOT_BATTERY = 7   // "BAT 80%"
 };
 
-// CGM status (same semantics as casiocgm / Nightscout-supercgm)
-enum { CGM_STATUS_OK = 0, CGM_STATUS_NO_DATA = 1, CGM_STATUS_NO_CONN = 2, CGM_STATUS_OLD = 3 };
+// CGM status: CgmStatus of the shared library pebble-cgm (OK, NO_DATA, NO_CONN, OLD, NO_APP, NO_URL)
+#include "cgm.h"
 
 // Returns true if the message only carried CGM/weather data (no settings)
 bool complications_inbox(DictionaryIterator *iter);

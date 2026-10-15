@@ -18,6 +18,12 @@ window.DUB_I18N = {
     'Apply to Color Set': 'Anwenden auf Farbset',
     // Nightscout
     'Nightscout URL': 'Nightscout-URL',
+    'Data source': 'Datenquelle',
+    'iPump-mini (local, this iPhone)': 'iPump-mini (lokal, dieses iPhone)',
+    'iPump-mini reads a MiniMed 780G directly on the iPhone, no internet needed. With iPump-mini the Nightscout fields below are only used as fallback.': 'iPump-mini liest eine MiniMed 780G direkt auf dem iPhone aus, ohne Internet. Mit iPump-mini werden die Nightscout-Felder unten nur als Fallback genutzt.',
+    'iPump-mini server': 'iPump-mini-Server',
+    'Nightscout as fallback (iPump-mini)': 'Nightscout als Fallback (iPump-mini)',
+    'Only used when the app is unreachable, at most every 5 minutes.': 'Nur wenn die App nicht erreichbar ist, höchstens alle 5 Minuten.',
     'Access token (optional)': 'Zugriffstoken (optional)',
     'Units': 'Einheit',
     'High above': 'Hoch über',

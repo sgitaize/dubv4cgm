@@ -138,6 +138,13 @@
       type: 'section',
       items: [
         { type: 'heading', defaultValue: 'Nightscout CGM' },
+        { type: 'select', messageKey: 'CgmSourceSel', label: 'Data source', defaultValue: 'nightscout',
+          options: [ { label: 'Nightscout', value: 'nightscout' }, { label: 'iPump-mini (local, this iPhone)', value: 'ipumpmini' } ],
+          description: 'iPump-mini reads a MiniMed 780G directly on the iPhone, no internet needed. With iPump-mini the Nightscout fields below are only used as fallback.' },
+        { type: 'input', messageKey: 'OmpUrl', label: 'iPump-mini server', defaultValue: 'http://127.0.0.1:17580',
+          attributes: { placeholder: 'http://127.0.0.1:17580', type: 'url', autocapitalize: 'off', autocorrect: 'off' } },
+        { type: 'toggle', messageKey: 'OmpFallback', label: 'Nightscout as fallback (iPump-mini)', defaultValue: false,
+          description: 'Only used when the app is unreachable, at most every 5 minutes.' },
         { type: 'input', messageKey: 'NsUrl', label: 'Nightscout URL', defaultValue: '',
           attributes: { placeholder: 'https://my-site.herokuapp.com', type: 'url', autocapitalize: 'off', autocorrect: 'off' } },
         { type: 'input', messageKey: 'NsToken', label: 'Access token (optional)', defaultValue: '',

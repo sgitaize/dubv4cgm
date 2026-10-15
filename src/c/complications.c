@@ -23,6 +23,8 @@ static char s_trend = '-';
 static int  s_status = -1;         // -1 = nothing received yet
 static time_t s_ts = 0;
 static int  s_sgv = 0;
+static int  s_source = 0;         // 1 = value from the Nightscout fallback (cloud)
+#define PERSIST_CGM_KEY 1343      // last reading (pebble-cgm CgmLast)
 
 static bool s_wx_valid = false;
 static int  s_wx_temp = 0;
@@ -57,7 +59,8 @@ static const char *cgm_status_text(void) {
   switch (s_status) {
     case -1:                 return "CGM ...";
     case CGM_STATUS_NO_CONN: return TR("NO CONN", "KEINE VERB");
-    case 4:                  return TR("SET URL", "URL FEHLT");   // pkjs: no Nightscout URL
+    case CGM_STATUS_NO_APP:  return TR("OPEN APP", "APP ÖFFNEN");  // iPump-mini unreachable
+    case CGM_STATUS_NO_URL:  return TR("SET URL", "URL FEHLT");   // pkjs: no data source
     default:                 return TR("NO BG", "KEIN WERT");
   }
 }
@@ -149,6 +152,10 @@ static void cgm_layer_update(Layer *layer, GContext *ctx) {
     return;
   }
 
+  if (s_source == 1) {   // value from the Nightscout fallback
+    cgm_draw_cloud(ctx, GPoint(x + 6, 13), base);
+    x += 13;
+  }
   draw_trend_arrow(ctx, s_trend, GRect(x, 7, CGM_ARROW_W, 14), col);
   x += CGM_ARROW_W + 2;
   if (s_delta[0] && x < b.size.w) {
@@ -275,6 +282,32 @@ static void check_alerts(void) {
   }
 }
 
+// Last reading (pebble-cgm): shown right after a restart, aging by its timestamp
+static void save_last(void) {
+  if (s_sgv <= 0 || s_ts <= 0) return;
+  CgmLast last;
+  memset(&last, 0, sizeof(last));
+  last.fallback = (uint8_t)s_source;
+  last.ts = (int32_t)s_ts;
+  last.sgv = s_sgv;
+  snprintf(last.value, sizeof(last.value), "%s", s_value);
+  snprintf(last.delta_text, sizeof(last.delta_text), "%s", s_delta);
+  last.trend[0] = s_trend;
+  cgm_last_save(PERSIST_CGM_KEY, &last);
+}
+
+static void load_last(void) {
+  CgmLast last;
+  if (!cgm_last_load(PERSIST_CGM_KEY, &last, 6 * 3600)) return;
+  snprintf(s_value, sizeof(s_value), "%s", last.value);
+  snprintf(s_delta, sizeof(s_delta), "%s", last.delta_text);
+  s_trend = last.trend[0] ? last.trend[0] : '-';
+  s_sgv = last.sgv;
+  s_ts = (time_t)last.ts;
+  s_source = last.fallback;
+  s_status = CGM_STATUS_OK;   // staleness follows from the timestamp
+}
+
 bool complications_inbox(DictionaryIterator *iter) {
   Tuple *t;
   bool data = false;
@@ -283,10 +316,13 @@ bool complications_inbox(DictionaryIterator *iter) {
   if ((t = dict_find(iter, MESSAGE_KEY_CgmTrend))) s_trend = t->value->cstring[0];
   if ((t = dict_find(iter, MESSAGE_KEY_CgmSgv)))   s_sgv = (int)t->value->int32;
   if ((t = dict_find(iter, MESSAGE_KEY_CgmTs)))    s_ts = (time_t)t->value->int32;
+  if ((t = dict_find(iter, MESSAGE_KEY_CgmSource))) s_source = (int)t->value->int32;
+  cgm_wake_handle_inbox(iter, MESSAGE_KEY_CgmWakeNext, MESSAGE_KEY_CgmWakeInterval);
   if ((t = dict_find(iter, MESSAGE_KEY_CgmStatus))) {
     s_status = (int)t->value->int32;
     // OLD keeps the last value (shown struck through), errors drop it
     if (s_status != CGM_STATUS_OK && s_status != CGM_STATUS_OLD) s_sgv = 0;
+    else save_last();
     check_alerts();
     data = true;
   }
@@ -330,6 +366,8 @@ static void complications_settings_callback(void) {
 }
 
 void complications_init(void) {
+  load_last();
+  cgm_wake_init(request_bg);
   cgm_layer = layer_create(CGM_LAYER);
   layer_set_update_proc(cgm_layer, cgm_layer_update);
   layer_add_child(my_window_layer, cgm_layer);
@@ -341,6 +379,7 @@ void complications_init(void) {
 }
 
 void complications_deinit(void) {
+  cgm_wake_deinit();
   settings_unregister_callback(SETTINGS_CALLBACK_COMPLICATIONS);
   if (cgm_layer) {
     layer_destroy(cgm_layer);

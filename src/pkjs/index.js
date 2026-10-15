@@ -2,24 +2,22 @@
  * 91 Dub CGM – phone side
  * - Settings from the GitHub Pages config page → watch (message keys by name,
  *   same value format as the former Clay page of 91 Dub v5 plus)
- * - Nightscout /pebble fetch with the synced schedule of casiocgm
- *   (learned upload lag, probe, watchdog request from the watch)
+ * - CGM via the shared library pebble-cgm (src/pkjs/cgm.js): Nightscout (default) or
+ *   iPump-mini (local iPhone app, wake schedule, optional Nightscout fallback)
  * - Weather from Open-Meteo (no API key), every 30 min
  */
 var messageKeys = require('message_keys');
 
 var CONFIG_URL = 'https://sgitaize.github.io/dubv4cgm/config/';
 var SETTINGS_STORAGE_KEY = 'dubv4cgm_settings';
-var LAG_KEY = 'dubv4cgm_upload_lag';
 var HANDSHAKE_KEY = 9999;
 
 // Keys handled here, not passed through 1:1
-var PHONE_ONLY = { CgmHigh: 1, CgmLow: 1, CgmStaleMin: 1 };
+var PHONE_ONLY = { CgmHigh: 1, CgmLow: 1, CgmStaleMin: 1, CgmSourceSel: 1, OmpUrl: 1, OmpFallback: 1 };
 
-var BG_STATUS = { OK: 0, NO_DATA: 1, NO_CONN: 2, OLD: 3, NO_URL: 4 };
+var BG_STATUS = { OK: 0, NO_DATA: 1, NO_CONN: 2, OLD: 3, NO_APP: 4, NO_URL: 5 };   // = pebble-cgm CgmStatus
 
 var settings = {};
-var fetchTimer = null;
 var weatherTimer = null;
 var watchReady = false;
 
@@ -105,17 +103,7 @@ function trendCode(direction) {
 }
 
 // Auto-detect mmol (< 40) vs mg/dL; returns mg/dL
-function parseSgvMgdl(raw) {
-  var f = parseFloat(raw);
-  if (!isFinite(f) || f <= 0) return NaN;
-  return f < 40 ? Math.round(f * 18) : Math.round(f);
-}
 
-function parseDeltaMgdl(raw) {
-  var f = parseFloat(raw);
-  if (!isFinite(f)) return NaN;
-  return (Math.abs(f) < 30 && String(raw).indexOf('.') >= 0) ? f * 18 : f;
-}
 
 function formatDelta(deltaMgdl) {
   if (!isFinite(deltaMgdl)) return '';
@@ -131,127 +119,42 @@ function sendBgStatus(status, extra) {
   sendMsg(msg, 'BG status ' + status);
 }
 
-// Synced schedule (casiocgm v2.3.5): next fetch at reading ts + sensor
-// interval + learned upload lag; probe at half the lag once per reading.
-var lagSec = Math.max(0, parseInt(localStorage.getItem(LAG_KEY), 10) || 0);
-var lastSeenTsSec = 0, prevFetchNow = 0, prevMissed = false;
-
-function learnUploadLag(bgTsSec, serverNowSec, sensorSec) {
-  if (lastSeenTsSec && bgTsSec > lastSeenTsSec) {
-    var sample = Math.max(0, serverNowSec - bgTsSec);
-    var lower = prevMissed ? prevFetchNow - bgTsSec : -1;
-    if (prevMissed && serverNowSec - prevFetchNow <= 20) {
-      lagSec = sample > lagSec ? sample : Math.round((lagSec + sample) / 2);
-    } else if (lower > lagSec) {
-      lagSec = Math.round((lower + sample) / 2);
-    } else {
-      lagSec = Math.min(lagSec, sample);
-    }
-    lagSec = Math.min(lagSec, sensorSec);
-    try { localStorage.setItem(LAG_KEY, String(lagSec)); } catch (e) {}
-  }
-  prevMissed = (bgTsSec === lastSeenTsSec);
-  lastSeenTsSec = bgTsSec;
-  prevFetchNow = serverNowSec;
-}
-
-function planNextBGFetch(lastBgTsSec, serverNowSec) {
-  if (fetchTimer) { clearTimeout(fetchTimer); fetchTimer = null; }
-  var sensorSec = sensorMin() * 60;
-  if (!lastBgTsSec) {
-    fetchTimer = setTimeout(fetchNightscout, 60000);
-    return;
-  }
-  var nowSec = serverNowSec > 0 ? serverNowSec : Math.floor(Date.now() / 1000);
-  learnUploadLag(lastBgTsSec, nowSec, sensorSec);
-  var dueSec = lastBgTsSec + sensorSec + Math.max(30, lagSec + 10);
-  var probeSec = lastBgTsSec + sensorSec + Math.max(30, Math.round(lagSec / 2));
-  var delay = (dueSec - nowSec) * 1000;
-  if (dueSec - probeSec >= 30 && probeSec > nowSec + 5) delay = (probeSec - nowSec) * 1000;
-  if (delay < 15000) delay = (nowSec - dueSec > 120) ? 60000 : 15000;
-  if (delay > sensorSec * 3000) delay = sensorSec * 1000;
-  console.log('[dubv4cgm] next BG fetch in ' + Math.round(delay / 1000) + ' s (lag ' + lagSec + ' s)');
-  fetchTimer = setTimeout(fetchNightscout, delay);
-}
-
-function fetchNightscout() {
-  if (fetchTimer) { clearTimeout(fetchTimer); fetchTimer = null; }
+// ── CGM data source: shared library pebble-cgm ─────────────────────────────
+function nsUrl() {
   var url = String(setting('NsUrl', '')).trim();
-  if (url.length < 4) {
-    sendBgStatus(BG_STATUS.NO_URL);
-    return;   // no polling without a URL; a new config restarts it
-  }
-  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
-  url = url.replace(/\/+$/, '');
-  var apiUrl = url.indexOf('/pebble') >= 0 ? url : url + '/pebble';
-  var token = String(setting('NsToken', '')).trim();
-  if (token && apiUrl.indexOf('token=') < 0) {
-    apiUrl += (apiUrl.indexOf('?') >= 0 ? '&' : '?') + 'token=' + encodeURIComponent(token);
-  }
-
-  var req = new XMLHttpRequest();
-  req.open('GET', apiUrl, true);
-  req.timeout = 15000;
-  // Guard: some phones never call any XHR callback; keep the chain alive
-  var done = false;
-  var guard = setTimeout(function() {
-    if (done) return;
-    done = true;
-    try { req.abort(); } catch (e) {}
-    planNextBGFetch(null);
-  }, 25000);
-  function finish() {
-    if (done) return false;
-    done = true;
-    clearTimeout(guard);
-    return true;
-  }
-  function fail(status) {
-    sendBgStatus(status);
-    planNextBGFetch(null);
-  }
-  req.onload = function() {
-    if (!finish()) return;
-    if (req.status !== 200) { console.log('[dubv4cgm] HTTP ' + req.status); return fail(BG_STATUS.NO_CONN); }
-    try {
-      var data = JSON.parse(req.responseText);
-      var bg = null, serverNow = 0;
-      if (data && Array.isArray(data.bgs) && data.bgs.length > 0) {
-        bg = data.bgs[0];
-        if (Array.isArray(data.status) && data.status[0]) serverNow = parseInt(data.status[0].now || 0, 10) || 0;
-      } else if (Array.isArray(data) && data.length > 0) {
-        bg = data[0];
-      } else if (data && (data.sgv || data.value || data.glucose)) {
-        bg = data;
-      }
-      if (!bg) return fail(BG_STATUS.NO_DATA);
-      var sgv = parseSgvMgdl(bg.sgv || bg.glucose || bg.value) || 0;
-      if (sgv <= 0) return fail(BG_STATUS.NO_DATA);
-      var bgTs = parseInt(bg.datetime || bg.date || bg.mills || bg.timestamp || 0, 10) || 0;
-      if (bgTs > 1000000000000) bgTs = Math.floor(bgTs / 1000);
-      if (serverNow > 1000000000000) serverNow = Math.floor(serverNow / 1000);
-      var nowSec = serverNow > 0 ? serverNow : Math.floor(Date.now() / 1000);
-      if (!bgTs) bgTs = nowSec;
-      // Watch works with its own clock: shift the timestamp by the skew
-      var tsWatch = bgTs + (Math.floor(Date.now() / 1000) - nowSec);
-      var status = (nowSec - bgTs > sensorMin() * 2 * 60) ? BG_STATUS.OLD : BG_STATUS.OK;
-      var msg = {};
-      msg[messageKeys.CgmValue] = mmol() ? (sgv / 18).toFixed(1) : String(sgv);
-      msg[messageKeys.CgmDelta] = formatDelta(parseDeltaMgdl(bg.bgdelta));
-      msg[messageKeys.CgmTrend] = trendCode(bg.direction || bg.trend);
-      msg[messageKeys.CgmSgv] = sgv;
-      msg[messageKeys.CgmTs] = tsWatch;
-      sendBgStatus(status, msg);
-      planNextBGFetch(bgTs, nowSec);
-    } catch (ex) {
-      console.log('[dubv4cgm] parse error: ' + ex);
-      fail(BG_STATUS.NO_DATA);
-    }
-  };
-  req.onerror = function() { if (finish()) fail(BG_STATUS.NO_CONN); };
-  req.ontimeout = function() { if (finish()) fail(BG_STATUS.NO_CONN); };
-  req.send();
+  if (url.length >= 4 && !/^https?:\/\//i.test(url)) url = 'https://' + url;
+  return url;
 }
+
+var cgm = require('./cgm')({
+  name: 'dubv4cgm',
+  settings: function() {
+    return {
+      source: String(setting('CgmSourceSel', 'nightscout')) === 'ipumpmini' ? 'ipumpmini' : 'nightscout',
+      nsUrl: nsUrl(), nsToken: String(setting('NsToken', '')).trim(),
+      ompUrl: String(setting('OmpUrl', 'http://127.0.0.1:17580')).trim(), ompFallback: isOn(setting('OmpFallback', '0')),
+      sensorMin: sensorMin(), sync: true, manualMin: sensorMin()
+    };
+  },
+  onReading: function(r) {
+    var msg = {};
+    msg[messageKeys.CgmValue] = mmol() ? (r.sgvMgdl / 18).toFixed(1) : String(r.sgvMgdl);
+    msg[messageKeys.CgmDelta] = formatDelta(r.deltaMgdl);
+    msg[messageKeys.CgmTrend] = trendCode(r.direction);
+    msg[messageKeys.CgmSgv] = r.sgvMgdl;
+    // Watch works with its own clock: shift the timestamp by the skew
+    msg[messageKeys.CgmTs] = r.tsSec + (Math.floor(Date.now() / 1000) - r.nowSec);
+    msg[messageKeys.CgmSource] = r.fallback ? 1 : 0;
+    sendBgStatus(r.stale ? BG_STATUS.OLD : BG_STATUS.OK, msg);
+  },
+  onStatus: function(code) { sendBgStatus(BG_STATUS[code] !== undefined ? BG_STATUS[code] : BG_STATUS.NO_DATA); },
+  onWakeSchedule: function(next, interval) {
+    var m = {};
+    m[messageKeys.CgmWakeNext] = next;
+    m[messageKeys.CgmWakeInterval] = interval;
+    sendMsg(m, 'wake schedule');
+  }
+});
 
 // ── Weather (Open-Meteo) ─────────────────────────────────────────────────
 function fetchWeather() {
@@ -282,7 +185,7 @@ function fetchWeather() {
 function start() {
   if (!watchReady) return;
   sendSettings();
-  fetchNightscout();
+  cgm.start();
   fetchWeather();
   if (weatherTimer) clearInterval(weatherTimer);
   weatherTimer = setInterval(fetchWeather, 30 * 60 * 1000);
@@ -303,7 +206,7 @@ Pebble.addEventListener('appmessage', function(e) {
     if (!watchReady) { watchReady = true; start(); }
   }
   if (p[messageKeys.RequestBg] !== undefined || p.RequestBg !== undefined) {
-    fetchNightscout();
+    cgm.fetchNow();
   }
 });
 
