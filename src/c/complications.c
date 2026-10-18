@@ -258,10 +258,7 @@ static void read_health(void) {
 
 // ── Phone communication ───────────────────────────────────────────────────
 static void request_bg(void) {
-  DictionaryIterator *iter;
-  if (app_message_outbox_begin(&iter) != APP_MSG_OK) return;
-  dict_write_uint8(iter, MESSAGE_KEY_RequestBg, 1);
-  app_message_outbox_send();
+  cgm_send_request(MESSAGE_KEY_RequestBg);   // retries while the outbox is busy
 }
 
 static void check_alerts(void) {

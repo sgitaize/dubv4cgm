@@ -35,32 +35,12 @@ function isOn(v) { return v === true || v === 1 || v === '1' || v === 'true'; }
 function mmol() { return String(setting('CgmUnits', '0')) === '1'; }
 function sensorMin() { return Math.max(1, parseInt(setting('CgmInterval', '5'), 10) || 5); }
 
-// ── AppMessage queue: one message in flight, retry on NACK ────────────────
-var outbox = [];
-var sending = false;
+// ── AppMessage queue (pebble-cgm): one message in flight, ack timeout, retries ──
+// A send without callback no longer blocks the queue; same key = newest message wins.
+var outbox = require('./cgm').outbox('dubv4cgm');
 
-function pump() {
-  if (sending || outbox.length === 0) return;
-  sending = true;
-  var item = outbox[0];
-  Pebble.sendAppMessage(item.msg, function() {
-    outbox.shift();
-    sending = false;
-    pump();
-  }, function() {
-    item.tries++;
-    if (item.tries >= 3) {
-      outbox.shift();
-      console.log('[dubv4cgm] ' + item.label + ' send failed');
-    }
-    sending = false;
-    setTimeout(pump, 1000);
-  });
-}
-
-function sendMsg(msg, label) {
-  outbox.push({ msg: msg, label: label, tries: 0 });
-  pump();
+function sendMsg(msg, label, key) {
+  outbox.send(msg, label, { key: key });
 }
 
 // ── Settings → watch ─────────────────────────────────────────────────────
@@ -87,7 +67,7 @@ function sendSettings() {
   msg[messageKeys.CgmStaleMin] = sensorMin() * 2;
   // SlotMain marks the message as a settings message on the watch
   if (msg[messageKeys.SlotMain] === undefined) msg[messageKeys.SlotMain] = '0';
-  sendMsg(msg, 'settings');
+  sendMsg(msg, 'settings', 'settings');
 }
 
 // ── Nightscout ───────────────────────────────────────────────────────────
@@ -116,7 +96,7 @@ function formatDelta(deltaMgdl) {
 function sendBgStatus(status, extra) {
   var msg = extra || {};
   msg[messageKeys.CgmStatus] = status;
-  sendMsg(msg, 'BG status ' + status);
+  sendMsg(msg, 'BG status ' + status, 'bg');
 }
 
 // ── CGM data source: shared library pebble-cgm ─────────────────────────────
@@ -152,7 +132,7 @@ var cgm = require('./cgm')({
     var m = {};
     m[messageKeys.CgmWakeNext] = next;
     m[messageKeys.CgmWakeInterval] = interval;
-    sendMsg(m, 'wake schedule');
+    sendMsg(m, 'wake schedule', 'wake');
   }
 });
 
@@ -173,7 +153,7 @@ function fetchWeather() {
         var msg = {};
         msg[messageKeys.WeatherTemp] = Math.round(cw.temperature);
         msg[messageKeys.WeatherCode] = parseInt(cw.weathercode, 10) || 0;
-        sendMsg(msg, 'weather');
+        sendMsg(msg, 'weather', 'weather');
       } catch (e) { console.log('[dubv4cgm] weather parse error: ' + e); }
     };
     req.send();
